@@ -1,0 +1,57 @@
+$def with (form, slides=None, bgThumbs=None, charThumbs=None)
+<style type="text/css" media="screen">
+    body { background:#444; color:#ccc; font:14px Arial; }
+    a { text-decoration:none; color:#666; }
+    ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; }
+    .thumb.slide { border:1px solid #999; float:left; width:200px; margin:0.3em; background:#D0D3EB; cursor:pointer; }
+    .thumb.slide:hover { background:#D8DDE6; }
+    .thumb.slide .number { color:#22243E; font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; }
+    .thumb.slide ul { padding:0.3em; }
+    div#bg { background:#C2E2EF; }
+    div#char { background:#B8CCBC; }
+    ul li { list-style:none; margin:0; padding:0; }
+    #palette { float:left; }
+    #palette > div { float:left; border:1px solid #999; margin:0 0 10px 10px; clear:left; }
+    #palette ul { padding:0 0.15em; }
+    #palette li.thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; border:1px solid #666; margin:0.3em 0.15em; float:left; }
+    div { float:left; overflow:auto; }
+    div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; color:#404E6B; }
+    form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111; font-weight:bold; }
+    form .wrong { color:red; font-weight:normal; padding:0.15em; }
+/*    div { outline:1px solid blue; }*/
+</style>
+<div style="overflow:hidden">
+    <h3>Edit Slide</h3>
+    <form action="" method="POST">
+    $:form.render()
+    </form>
+</div>
+<div id="palette">
+    <div id="bg">
+        <div class="title">Backgrounds</div>
+        <ul>
+        $for img in bgThumbs:
+            <li class="thumb" style="background-image:url(/static/img/$(img[:-4])_$(img[-4:]))">$img</li>
+        </ul>
+    </div>
+    <div id="char">
+        <div class="title">Characters</div>
+        <ul>
+        $for img in charThumbs:
+            <li class="thumb" style="background-image:url(/static/img/$(img[:-4])_$(img[-4:]))">$img</li>
+        </ul>
+    </div>
+</div>
+<div style="clear:left">
+<hr />
+$if slides is not None:
+    $for i,s in enumerate(slides):
+        <a class="slide thumb" href="#">
+            <div class="title">$(i+1)</div>
+            <ul>
+                <li>bg: $s.bg</li>
+                <li>img: $s.img</li>
+                <li>dialog: $s.dialog</li>
+            </ul>
+        </a>
+</div>
