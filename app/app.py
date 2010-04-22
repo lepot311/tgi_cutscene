@@ -1,8 +1,9 @@
 import web
+from web.contrib.template import render_jinja
 from forms import createSlideForm
 import pdb
 
-render = web.template.render('templates/')
+render = render_jinja('templates/', encoding = 'utf-8')
 
 urls = ('/', 'index',
        '/slide/create', 'createSlide',
@@ -22,14 +23,17 @@ class index:
 class createSlide:
     def GET(self):
         form = createSlideForm()
-        return render.createSlide(form, slides, bgThumbs, charThumbs)
+        context = {'slides':slides, 'bgThumbs':bgThumbs,
+                   'charThumbs':charThumbs, 'form':form}
+        return render.createSlide(context)
     def POST(self):
         form = createSlideForm()
+        context = {'slides':slides, 'bgThumbs':bgThumbs,
+                   'charThumbs':charThumbs, 'form':form}
         if form.validates():
             slides.append(form.d)
-            print slides
-            return render.createSlide(form, slides, bgThumbs, charThumbs)
+            return render.createSlide(context)
         else:
-            return render.createSlide(form, slides, bgThumbs, charThumbs)
+            return render.createSlide(context)
 
 if __name__ == "__main__": app.run()
