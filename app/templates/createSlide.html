@@ -19,7 +19,7 @@
     </div>
     <div style="overflow:hidden">
         <h3>Edit Slide</h3>
-        <form action="" method="POST">
+        <form action="" method="post">
         {{ form.render() }}
         </form>
     </div>
@@ -52,9 +52,9 @@
         <a class="slide thumb" href="#">
             <div class="title">{{ loop.index }}</div>
             <ul>
-                <li>bg: {{ s.bg }}</li>
-                <li>img: {{ s.img }}</li>
-                <li>dialog: {{ s.dialog }}</li>
+                <li class="bg">bg: {{ s.bg }}</li>
+                <li class="c">img: {{ s.img }}</li>
+                <li class="d">dialog: {{ s.dialog }}</li>
             </ul>
         </a>
         {% endfor %}

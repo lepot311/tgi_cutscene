@@ -17,7 +17,7 @@ div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.
 form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111; font-weight:bold; }
 form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
-.slide { width:720px; height:480px; position:relative; background:#bbb; overflow:hidden; }
+.slide { width:720px; height:480px; position:relative; background:#000; overflow:hidden; }
 .layer { position:absolute; background-repeat:no-repeat; background-position:0 0 }
 .layer.bg { top:0; left:0; width:720px; height:300px; z-index:1 }
 .layer.char { top:0; width:400px; height:300px; z-index:2; outline:1px solid red; }

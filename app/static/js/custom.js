@@ -1,19 +1,4 @@
 $(document).ready(function() {
-  //stylize form validation errors
-  $('form .wrong').hide().prev('input').css('background-color', '#FFB8BA').css('border-color', '#FF444D')
-  //bg listener
-  $('#palette #bg .thumb').click(function(e){
-    e.preventDefault()
-    var t = $(e.target)
-    $('form input#bg').val(t.attr('href'))
-  })
-  //char listener
-  $('#palette #char .thumb').click(function(e){
-    e.preventDefault()
-    var t = $(e.target)
-    $('form input#img').val(t.attr('href'))
-  })
-  
   var bg
   var c
   var d
@@ -27,46 +12,87 @@ $(document).ready(function() {
   var currentSlide
   var prevBg
   var imagePath = '/static/img/'
-  $('.slide').click(function(){
-      fadeSlide()
+  //stylize form validation errors
+  $('form .wrong').hide().prev('input').css('background-color', '#FFB8BA').css('border-color', '#FF444D')
+  //bg listener
+  $('#palette #bg .thumb').click(function(e){
+    e.preventDefault()
+    var t = $(e.target)
+    $('form input#bg').val(t.attr('href'))
+    $('.bg').stop().fadeTo(transitionSpeed, 0, function(){
+      $(this).css('background-image', 'url('+imagePath+t.attr('href')+')').fadeTo(transitionSpeed, 1)
+    })
+  })
+  //char listener
+  $('#palette #char .thumb').click(function(e){
+    e.preventDefault()
+    var t = $(e.target)
+    $('form input#img').val(t.attr('href'))
   })
   
-  slides = [
-    {'bgImg':'aberas.jpg',
-     'charImg':'devotress.png',
-     'dialogImg':'d2.jpg',
-     'direction':'left',
-     'text':'I dare say that you be right, Hermogenes: let us see;- Your meaning is, that the name of each thing is only that which anybody agrees to call it?'},
-    {'bgImg':'aberas.jpg',
-     'charImg':'devotress.png',
-     'dialogImg':'d2.jpg',
-     'direction':'right',
-     'text':'That is my notion.'},
-    {'bgImg':'aberas.jpg',
-     'charImg':'devotress.png',
-     'dialogImg':'d2.jpg',
-     'direction':'left',
-     'text':'Whether the giver of the name be an individual or a city?'},
-    {'bgImg':'aberas.jpg',
-     'charImg':'devotress.png',
-     'dialogImg':'d2.jpg',
-     'direction':'right',
-     'text':'Yes'},
-        
-  ]
+  // $('.slide').click(function(){
+  //       fadeSlide()
+  //   })
+  
+  $('.thumb.slide').click(function(){
+    var i = $(this).find('.title').text()
+    runSlide(getSlide(parseInt(i-1)))
+  })
+  
+  slides = []
 
+  buildSlides()
   showDialogBox()
-  runNext()
+  runSlide(getSlide(0))
 
-  function runNext(){
-      try {
-          runSlide(getNextSlide())
-      } catch(e){
-          console.log(e)
-          alert('out of slids')
-      }
+  function buildSlides(){
+    $('.thumb.slide').each(function(){
+      var n = $(this).find('.title').text()
+      var bg = $(this).find('.bg').text()
+      var c = $(this).find('.c').text()
+      var d = $(this).find('.dialog').text()
+      // console.log(n, bg, c, d)
+      slides.push({
+        'n': n,
+        'bgImg': bg,
+        'c': c,
+        'd': d
+        })
+    })
+    console.log(slides)
   }
 
+  function stopSlide(slide){
+    $(slide).find('.layer').stop()
+  }
+
+  function runSlide(slide){
+      try {
+        clearInterval(bt)
+      } catch(e) {
+        console.log(e)
+      }
+      bg = slide['bgImg']
+      c = slide['charImg']
+      d = slide['dialogImg']
+      direction = slide['direction']
+      text = slide['text']
+      // console.log(text)
+      animateBg(bg, transitionSpeed)
+      animateChar(transitionSpeed, direction, c)
+      textLength = 0
+      var bt = setInterval(function(){buildText(text)}, textSpeed)
+  }
+
+  // function runNext(){
+  //       try {
+  //           runSlide(getNextSlide())
+  //       } catch(e){
+  //           console.log(e)
+  //           alert('out of slids')
+  //       }
+  //   }
+  
   function fadeSlide(){
       var d = $('.dialog div')
       d.fadeOut(transitionSpeed, function(){
@@ -77,11 +103,19 @@ $(document).ready(function() {
       })
   }
   
+  function getSlide(i){
+    try {
+      return slides[i] 
+    } catch(e) {
+      console.log(e)
+    }
+  }
+  
   function getNextSlide(){
       currentSlideNum++
-      console.log('getNextSlide got '+currentSlideNum)
+      // console.log('getNextSlide got '+currentSlideNum)
       currentSlide = slides[currentSlideNum]
-      console.log('current slide object: '+currentSlide)
+      // console.log('current slide object: '+currentSlide)
       return currentSlide
   }
   
@@ -92,46 +126,33 @@ $(document).ready(function() {
     }, transitionSpeed)
   }
   
-  function runSlide(currentSlide){
-      bg = currentSlide['bgImg']
-      c = currentSlide['charImg']
-      d = currentSlide['dialogImg']
-      direction = currentSlide['direction']
-      text = currentSlide['text']
-      console.log(text)
-      animateBg(bg, transitionSpeed)
-      animateChar(transitionSpeed, direction, c)
-      textLength = 0
-      var bt = setInterval(function(){buildText(text)}, textSpeed)
-  }
-  
   function animateBg(img, transitionSpeed){
       if (img != prevBg) {
           prevBg = img
-          console.log('previous bg was '+prevBg)
-          $('.bg').hide().css('background-image', 'url('+imagePath+bg+')').fadeIn(transitionSpeed)
+          // console.log('previous bg was '+prevBg)
+          $('.slide .bg').hide().css('background-image', 'url('+imagePath+bg+')').fadeIn(transitionSpeed)
       }
   }
   
   function animateChar(transitionSpeed, direction, c){
       ch = $('.char')
-      console.log('character on '+direction)
+      // console.log('character on '+direction)
       //reset position
       ch.css('left', 'auto').css('right', 'auto')
-      console.log('char left: '+ch.css('left'))
-      console.log('char right: '+ch.css('right'))
+      // console.log('char left: '+ch.css('left'))
+      // console.log('char right: '+ch.css('right'))
 
       //set new starting position
       ch.css(direction, ch.width()*-1+'px')
-      console.log('char left: '+ch.css('left'))
-      console.log('char right: '+ch.css('right'))
+      // console.log('char left: '+ch.css('left'))
+      // console.log('char right: '+ch.css('right'))
       ch.css('background-image', 'url('+imagePath+c+')').show()
       if (direction == 'left') {
           ch.animate({
               left: 0
           }, transitionSpeed, 'swing')
       }
-      if (direction == 'right') {
+      else if (direction == 'right') {
           ch.animate({
               right: 0
           }, transitionSpeed, 'swing')
