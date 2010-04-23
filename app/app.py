@@ -13,8 +13,8 @@ app = web.application(urls, globals())
 
 slides = []
 bgThumbs = ['aberas.jpg', 'faustusestate.jpg', 'trogkenswamps.jpg']
-charThumbs = ['devotress.jpg', 'dungeonarcher.jpg', 'illusionist.jpg', 
-              'pangolan.jpg', 'pitfighter.jpg']
+charThumbs = ['devotress.png', 'dungeonarcher.png', 'illusionist.png', 
+              'pangolan.png', 'pitfighter.png']
 
 class index:
     def GET(self):

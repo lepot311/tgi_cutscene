@@ -8,56 +8,83 @@ $(document).ready(function() {
   var textLength = 0
   var textSpeed = 30
   var transitionSpeed = 1000
-  var currentSlideNum = -1
+  var currentSlideNum
   var currentSlide
   var prevBg
   var imagePath = '/static/img/'
+
   //stylize form validation errors
   $('form .wrong').hide().prev('input').css('background-color', '#FFB8BA').css('border-color', '#FF444D')
+
   //bg listener
   $('#palette #bg .thumb').click(function(e){
     e.preventDefault()
     var t = $(e.target)
-    $('form input#bg').val(t.attr('href'))
-    $('.bg').stop().fadeTo(transitionSpeed, 0, function(){
+    $('form input#bgImg').val(t.attr('href'))
+    $('#viewer .layer.bg').stop().fadeTo(transitionSpeed, 0, function(){
       $(this).css('background-image', 'url('+imagePath+t.attr('href')+')').fadeTo(transitionSpeed, 1)
     })
+    // If successful, set bin thumbnail to match
+    getCurrentSlideBin().find('.thumb.bgImg').css('background-image', $(this).css('background-image'))
   })
+
   //char listener
   $('#palette #char .thumb').click(function(e){
     e.preventDefault()
-    var t = $(e.target)
-    $('form input#img').val(t.attr('href'))
+    currentSlide.charImg = $(this).attr('href')
+    $('form input#charImg').val(currentSlide.charImg)
+    changeCharImg()
+    // If successful, set bin thumbnail to match
+    getCurrentSlideBin().find('.thumb.charImg').css('background-image', $(this).css('background-image'))
   })
   
-  // $('.slide').click(function(){
-  //       fadeSlide()
-  //   })
-  
-  $('.thumb.slide').click(function(){
-    var i = $(this).find('.title').text()
-    runSlide(getSlide(parseInt(i-1)))
+  //direction listener
+  $('form select#direction').change(function(){
+      currentSlide.direction = $(this).val()
+      runSlide()
   })
   
-  slides = []
-
-  buildSlides()
-  showDialogBox()
-  runSlide(getSlide(0))
+  //dialog listener
+  $('form #dialog').change(function(){
+    currentSlide.dialog = $(this).val()
+    runSlide()
+  })
+  
+  // Bin listener
+  $('#bin .slide').click(function(){
+    if (!$(this).hasClass('active')){
+      $('#bin .slide').removeClass('active')
+      // $(this).addClass('active')
+      var i = $(this).find('.title').text()
+      currentSlide = getSlide(i)
+      runSlide()
+    }
+  })
+  
+  function getCurrentSlideBin(){
+    return $('#bin .slide#'+currentSlide.n)
+  }
+  
+  function addSlide(n, bgImg, charImg, dialogImg, direction, dialog){
+    slides.push({
+      'n': n,
+      'bgImg': bgImg,
+      'charImg': charImg,
+      'dialogImg': dialogImg,
+      'direction': direction,
+      'dialog': dialog
+    })
+  }
 
   function buildSlides(){
-    $('.thumb.slide').each(function(){
+    $('#bin .slide').each(function(){
       var n = $(this).find('.title').text()
-      var bg = $(this).find('.bg').text()
-      var c = $(this).find('.c').text()
-      var d = $(this).find('.dialog').text()
-      // console.log(n, bg, c, d)
-      slides.push({
-        'n': n,
-        'bgImg': bg,
-        'c': c,
-        'd': d
-        })
+      var bgImg = $(this).find('.bgImg').text()
+      var charImg = $(this).find('.charImg').text()
+      var dialogImg = $(this).find('.dialogImg').text()
+      var direction = $(this).find('.direction').text()
+      var dialog = $(this).find('.dialog').text()
+      addSlide(n, bgImg, charImg, dialogImg, direction, dialog)
     })
     console.log(slides)
   }
@@ -66,33 +93,24 @@ $(document).ready(function() {
     $(slide).find('.layer').stop()
   }
 
-  function runSlide(slide){
+  function runSlide(){
+      console.log('running slide: '+currentSlide.n)
+      getCurrentSlideBin().addClass('active')
       try {
         clearInterval(bt)
       } catch(e) {
-        console.log(e)
+        console.log('**No interval to clear')
       }
-      bg = slide['bgImg']
-      c = slide['charImg']
-      d = slide['dialogImg']
-      direction = slide['direction']
-      text = slide['text']
-      // console.log(text)
-      animateBg(bg, transitionSpeed)
-      animateChar(transitionSpeed, direction, c)
-      textLength = 0
-      var bt = setInterval(function(){buildText(text)}, textSpeed)
+      animateBg(currentSlide.bgImg, transitionSpeed)
+      animateChar()
+      showDialogBox()
+      if (dialog != undefined){
+        textLength = 0
+        console.log(currentSlide.dialog)
+        var bt = setInterval(function(){buildText(currentSlide.dialog)}, textSpeed)
+      }
   }
 
-  // function runNext(){
-  //       try {
-  //           runSlide(getNextSlide())
-  //       } catch(e){
-  //           console.log(e)
-  //           alert('out of slids')
-  //       }
-  //   }
-  
   function fadeSlide(){
       var d = $('.dialog div')
       d.fadeOut(transitionSpeed, function(){
@@ -105,9 +123,9 @@ $(document).ready(function() {
   
   function getSlide(i){
     try {
-      return slides[i] 
+      return slides[i-1] 
     } catch(e) {
-      console.log(e)
+      console.log("Oops! "+e)
     }
   }
   
@@ -120,40 +138,49 @@ $(document).ready(function() {
   }
   
   function showDialogBox(){
-    var d = $('.dialog')
-    d.animate({
+    $('.dialogWrapper').animate({
       bottom: 0
     }, transitionSpeed)
   }
   
-  function animateBg(img, transitionSpeed){
-      if (img != prevBg) {
-          prevBg = img
-          // console.log('previous bg was '+prevBg)
-          $('.slide .bg').hide().css('background-image', 'url('+imagePath+bg+')').fadeIn(transitionSpeed)
-      }
+  function animateBg(){
+    $('#viewer .layer.bg').hide().css('background-image', 'url('+imagePath+currentSlide.bgImg+')').fadeTo(transitionSpeed, 1)
   }
   
-  function animateChar(transitionSpeed, direction, c){
-      ch = $('.char')
-      // console.log('character on '+direction)
+  function setCharImg(){
+    // Sets background-image property of character layer in viewer.
+    // Returns the character layer as a jQuery object
+    charImgBase = currentSlide.charImg.slice(0, currentSlide.charImg.length-4)
+    $('#viewer .layer.char').css('background-image', 'url('+imagePath+charImgBase+'_'+currentSlide.direction+'.png)')
+  }
+  
+  function changeCharImg(){
+    // Fade in and out
+    $('#viewer .layer.char').stop().fadeTo(transitionSpeed, 0, function(){
+      setCharImg()
+      $(this).fadeTo(transitionSpeed, 1)
+    })
+  }
+  
+  function animateChar(){
+      // console.log('character on '+currentSlide.direction)
       //reset position
-      ch.css('left', 'auto').css('right', 'auto')
+      $('#viewer .layer.char').css('left', 'auto').css('right', 'auto')
       // console.log('char left: '+ch.css('left'))
       // console.log('char right: '+ch.css('right'))
 
       //set new starting position
-      ch.css(direction, ch.width()*-1+'px')
+      $('#viewer .layer.char').css(currentSlide.direction, $('#viewer .layer.char').width()*-1+'px')
+      setCharImg()
       // console.log('char left: '+ch.css('left'))
       // console.log('char right: '+ch.css('right'))
-      ch.css('background-image', 'url('+imagePath+c+')').show()
-      if (direction == 'left') {
-          ch.animate({
+      if (currentSlide.direction == 'left') {
+          $('#viewer .layer.char').animate({
               left: 0
           }, transitionSpeed, 'swing')
       }
-      else if (direction == 'right') {
-          ch.animate({
+      else if (currentSlide.direction == 'right') {
+          $('#viewer .layer.char').animate({
               right: 0
           }, transitionSpeed, 'swing')
       }
@@ -165,4 +192,25 @@ $(document).ready(function() {
           $('.dialog div').text(text.slice(0, textLength))
       }
   }
+  
+  slides = []
+
+  buildSlides()
+  try {
+    getSlide(1)
+    console.log('Found slides')
+  } catch(e) {
+    console.log('No slides exist') //let's make one
+    var n = 1
+    var bgImg = ''
+    var charImg = ''
+    var dialogImg = ''
+    var direction = 'left'
+    var dialog = ''
+    addSlide(n, bgImg, charImg, dialogImg, direction, dialog)
+    console.log('-Created initial slide')
+    // console.log(slides)
+  }
+  currentSlide = getSlide(1)
+  runSlide()
 });

@@ -2,8 +2,10 @@ from web import form
 # from app import bgThumbs, charThumbs
 
 createSlideForm = form.Form(
-    form.Textbox('bg', form.notnull),
-    form.Textbox('img', form.notnull),
+    form.Textbox('bgImg', form.notnull),
+    form.Textbox('charImg', form.notnull),
+    form.Textbox('dialogImg'),
+    form.Dropdown('direction', [('left', 'left'), ('right', 'right')]),
     form.Textbox('dialog', form.notnull),
-    form.Button('Add slide')
+    form.Button('Save')
 )

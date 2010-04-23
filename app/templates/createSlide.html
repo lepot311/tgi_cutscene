@@ -5,15 +5,17 @@
 <head>
     <title>demo</title>
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
-    <script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="/static/js/custom.js"></script>
 </head>
 <body>
-    <div class="slide">
+    <div id="viewer">
         <div class="layer bg"></div>
         <div class="layer char"></div>
-        <div class="layer dialog">
-            <div>
+        <div class="layer dialogWrapper">
+            <div class="layer dialog">
+                <div class="text">
+                </div>
             </div>
         </div>
     </div>
@@ -39,22 +41,24 @@
             <ul>
             {% for img in charThumbs %}
                 <li>
-                    <a class="thumb" href="{{ img }}" style="background-image:url(/static/img/_{{ img }})">{{ img }}</a>
+                    <a class="thumb" href="{{ img }}" style="background-image:url(/static/img/_{{ img[:-4] }}.jpg)">{{ img[:-4] }}.jpg</a>
                 </li>
             {% endfor %}
             </ul>
         </div>
     </div>
-    <div style="clear:left">
+    <div id="bin" style="clear:left">
     <hr />
     {% if slides is defined %}
         {% for s in slides %}
-        <a class="slide thumb" href="#">
+        <a class="slide" href="#" id="{{ loop.index }}">
             <div class="title">{{ loop.index }}</div>
             <ul>
-                <li class="bg">bg: {{ s.bg }}</li>
-                <li class="c">img: {{ s.img }}</li>
-                <li class="d">dialog: {{ s.dialog }}</li>
+                <li class="thumb bgImg" style="background-image:url(/static/img/_{{ s.bgImg }})">{{ s.bgImg }}</li>
+                <li class="thumb charImg" style="background-image:url(/static/img/_{{ s.charImg[:-4] }}.jpg)">{{ s.charImg }}</li>
+                <li class="dialogImg">{{ s.dialogImg }}</li>
+                <li class="direction">{{ s.direction }}</li>
+                <li class="dialog">{{ s.dialog }}</li>
             </ul>
         </a>
         {% endfor %}
