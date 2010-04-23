@@ -56,7 +56,7 @@ $(document).ready(function() {
       $('#bin .slide').removeClass('active')
       // $(this).addClass('active')
       var i = $(this).find('.title').text()
-      currentSlide = getSlide(i)
+      setCurrentSlide(getSlide(i))
       runSlide()
     }
   })
@@ -121,11 +121,22 @@ $(document).ready(function() {
       })
   }
   
+  function setCurrentSlide(slide){
+    console.log(slide)
+    currentSlide = slide
+    $('form #bgImg').val(currentSlide.bgImg)
+    $('form #charImg').val(currentSlide.charImg)
+    $('form #dialogImg').val(currentSlide.dialogImg)
+    $('form #direction').val(currentSlide.direction)
+    $('form #dialog').val(currentSlide.dialog)
+  }
+  
   function getSlide(i){
-    try {
-      return slides[i-1] 
-    } catch(e) {
-      console.log("Oops! "+e)
+    if (slides[i-1] == undefined){
+      console.log("Oops! Slide undefined")
+      return false
+    } else {
+      return slides[i-1]
     }
   }
   
@@ -196,10 +207,7 @@ $(document).ready(function() {
   slides = []
 
   buildSlides()
-  try {
-    getSlide(1)
-    console.log('Found slides')
-  } catch(e) {
+  if (!getSlide(1)) {
     console.log('No slides exist') //let's make one
     var n = 1
     var bgImg = ''
@@ -209,8 +217,7 @@ $(document).ready(function() {
     var dialog = ''
     addSlide(n, bgImg, charImg, dialogImg, direction, dialog)
     console.log('-Created initial slide')
-    // console.log(slides)
   }
-  currentSlide = getSlide(1)
+  setCurrentSlide(getSlide(1))
   runSlide()
 });
