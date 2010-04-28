@@ -52,7 +52,9 @@
     {% if slides is defined %}
         {% for s in slides %}
         <a class="slide" href="#" id="{{ loop.index }}">
-            <div class="title">{{ loop.index }}</div>
+            <div class="title">{{ loop.index }}
+                <div class="delete" href="#"></div>
+            </div>
             <ul>
                 <li class="thumb bgImg" style="background-image:url(/static/img/_{{ s.bgImg }})">{{ s.bgImg }}</li>
                 <li class="thumb charImg" style="background-image:url(/static/img/_{{ s.charImg[:-4] }}.jpg)">{{ s.charImg }}</li>

@@ -13,19 +13,24 @@ $(document).ready(function() {
   var prevBg
   var imagePath = '/static/img/'
 
+  $('#palette .thumb').click(function(){
+    console.log(currentSlide)
+  })
+
   //stylize form validation errors
   $('form .wrong').hide().prev('input').css('background-color', '#FFB8BA').css('border-color', '#FF444D')
 
   //bg listener
   $('#palette #bg .thumb').click(function(e){
     e.preventDefault()
-    var t = $(e.target)
-    $('form input#bgImg').val(t.attr('href'))
+    currentSlide.bgImg = $(this).attr('href')
+    $('form input#bgImg').val(currentSlide.bgImg)
     $('#viewer .layer.bg').stop().fadeTo(transitionSpeed, 0, function(){
-      $(this).css('background-image', 'url('+imagePath+t.attr('href')+')').fadeTo(transitionSpeed, 1)
+      $(this).css('background-image', 'url('+imagePath+currentSlide.bgImg+')').fadeTo(transitionSpeed, 1)
     })
-    // If successful, set bin thumbnail to match
-    getCurrentSlideBin().find('.thumb.bgImg').css('background-image', $(this).css('background-image'))
+    updateSlideBin()
+    // // If successful, set bin thumbnail to match
+    // getCurrentSlideBin().find('.thumb.bgImg').css('background-image', $(this).css('background-image'))
   })
 
   //char listener
@@ -34,8 +39,9 @@ $(document).ready(function() {
     currentSlide.charImg = $(this).attr('href')
     $('form input#charImg').val(currentSlide.charImg)
     changeCharImg()
+    updateSlideBin()
     // If successful, set bin thumbnail to match
-    getCurrentSlideBin().find('.thumb.charImg').css('background-image', $(this).css('background-image'))
+    // getCurrentSlideBin().find('.thumb.charImg').css('background-image', $(this).css('background-image'))
   })
   
   //direction listener
@@ -61,8 +67,22 @@ $(document).ready(function() {
     }
   })
   
+  // Bin delete listener
+  $('#bin .slide .delete').click(function(e){
+    e.preventDefault()
+    alert('Delete?')
+  })
+  
   function getCurrentSlideBin(){
     return $('#bin .slide#'+currentSlide.n)
+  }
+
+  function updateSlideBin(){
+    getCurrentSlideBin().find('.thumb.bgImg').css('background-image', '_'+currentSlide.bgImg)
+    getCurrentSlideBin().find('.thumb.charImg').css('background-image', '_'+currentSlide.charImg.slice(0, -3)+'jpg')
+      // .find('.thumb.dialogImg').text(currentSlide.dialogImg)
+      // .find('.thumb.direction').text(currentSlide.direction)
+      // .find('.thumb.dialog').text(currentSlide.dialog)
   }
   
   function addSlide(n, bgImg, charImg, dialogImg, direction, dialog){
@@ -78,7 +98,7 @@ $(document).ready(function() {
 
   function buildSlides(){
     $('#bin .slide').each(function(){
-      var n = $(this).find('.title').text()
+      var n = $(this).attr('id')
       var bgImg = $(this).find('.bgImg').text()
       var charImg = $(this).find('.charImg').text()
       var dialogImg = $(this).find('.dialogImg').text()
@@ -101,7 +121,7 @@ $(document).ready(function() {
       } catch(e) {
         console.log('**No interval to clear')
       }
-      animateBg(currentSlide.bgImg, transitionSpeed)
+      animateBg()
       animateChar()
       showDialogBox()
       if (dialog != undefined){

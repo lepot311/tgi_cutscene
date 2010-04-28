@@ -12,6 +12,8 @@ ul li { list-style:none; margin:0; padding:0; }
 #bin .slide:hover { background:#D8DDE6; }
 #bin .slide.active { background:#79C0E7; color:#222; }
 #bin .slide .number { color:#22243E; font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; }
+#bin .slide .delete { float:right; display:block; width:12px; height:12px; background:url(/static/img/delete.png) no-repeat 0 0; cursor:pointer; }
+#bin .slide .delete:hover { background-position:0 -12px; }
 
 div { float:left; overflow:auto; }
 div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; color:#404E6B; }
