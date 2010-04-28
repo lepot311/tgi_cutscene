@@ -114,20 +114,22 @@ $(document).ready(function() {
   }
 
   function runSlide(){
-      console.log('running slide: '+currentSlide.n)
+      // console.log('running slide: '+currentSlide.n)
       getCurrentSlideBin().addClass('active')
-      try {
-        clearInterval(bt)
-      } catch(e) {
-        console.log('**No interval to clear')
-      }
+      clearInterval(bt)
       animateBg()
       animateChar()
       showDialogBox()
-      if (dialog != undefined){
+      if (currentSlide.dialog != undefined){
         textLength = 0
-        console.log(currentSlide.dialog)
-        var bt = setInterval(function(){buildText(currentSlide.dialog)}, textSpeed)
+        var bt = setInterval(function(){
+          if (textLength < currentSlide.dialog.length) {
+            textLength++
+            $('.dialog div').text(currentSlide.dialog.slice(0, textLength))
+          } else {
+            clearInterval(bt)
+          }
+        }, textSpeed)
       }
   }
 
@@ -142,7 +144,6 @@ $(document).ready(function() {
   }
   
   function setCurrentSlide(slide){
-    console.log(slide)
     currentSlide = slide
     $('form #bgImg').val(currentSlide.bgImg)
     $('form #charImg').val(currentSlide.charImg)
@@ -217,11 +218,12 @@ $(document).ready(function() {
       }
   }
   function buildText(text) {
-      if (textLength < text.length) {
-          // console.log('buildText: '+textLength)
-          textLength++
-          $('.dialog div').text(text.slice(0, textLength))
-      }
+    console.log('in buildText()')
+    if (textLength < text.length) {
+      // console.log('buildText: '+textLength)
+      textLength++
+      $('.dialog div').text(text.slice(0, textLength))
+    }
   }
   
   slides = []
