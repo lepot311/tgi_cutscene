@@ -117,7 +117,16 @@ $(document).ready(function() {
       // console.log('running slide: '+currentSlide.n)
       getCurrentSlideBin().addClass('active')
       clearInterval(bt)
-      animateBg()
+      console.log('! '+currentSlide.bgImg)
+      console.log('? '+getSlide(parseInt(currentSlide.n)-1).bgImg)
+      if (currentSlide.bgImg != '') {
+        if (!currentSlide.bgImg == getSlide(currentSlide.n-1).bgImg) {
+          setBgImg()
+          console.log('same bg?')
+        } else {
+          animateBg()
+        }
+      }
       animateChar()
       showDialogBox()
       if (currentSlide.dialog != undefined){
@@ -175,8 +184,14 @@ $(document).ready(function() {
     }, transitionSpeed)
   }
   
+  function setBgImg(){
+    $('#viewer .layer.bg').css('background-image', 'url('+imagePath+currentSlide.bgImg+')')
+  }
+  
   function animateBg(){
-    $('#viewer .layer.bg').hide().css('background-image', 'url('+imagePath+currentSlide.bgImg+')').fadeTo(transitionSpeed, 1)
+    $('#viewer .layer.bg').hide()
+    setBgImg()
+    $('#viewer .layer.bg').fadeTo(transitionSpeed, 1)
   }
   
   function setCharImg(){
@@ -197,7 +212,7 @@ $(document).ready(function() {
   function animateChar(){
       // console.log('character on '+currentSlide.direction)
       //reset position
-      $('#viewer .layer.char').css('left', 'auto').css('right', 'auto')
+      $('#viewer .layer.char').stop().css('left', 'auto').css('right', 'auto')
       // console.log('char left: '+ch.css('left'))
       // console.log('char right: '+ch.css('right'))
 
