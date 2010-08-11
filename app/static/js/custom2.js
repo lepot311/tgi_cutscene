@@ -95,23 +95,21 @@ var DISGAEA = {
       // Add thumbs to palette
       $.each(data, function()
       {
-        $(DISGAEA.get('palette')).find('.drawer.'+layer)
-          .append($div(false, 'thumb', 'background:url('+DISGAEA.get('thumbDir')+this.thumb+')').attr('href', this.src)
-            .click(function(e)
-            {
-              e.preventDefault()
-              // Remove all icons from thumbnail
-              $(this).find('.icon').remove()
-              // Add loader icon
-                .append($div(false, 'icon loader'))
-              // Cache the thumbnail for callback
-              var thumb = $(this)
-              // Refresh the viewer layer and callback when finished
-              DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), $(this).attr('href'), function(){
-                thumb.find('.loader').remove()
-                  .append($div(false, 'icon delete'))
-              })
-            }))
+        var image = this
+        var thumb = $div(false, 'thumb', 'background:url('+DISGAEA.get('thumbDir')+this.thumb+')')
+        $.extend(thumb, {
+          loadViewer: function()
+          {
+            // Add loader icon
+            $(this).append($div(false, 'icon loader'))
+            // Refresh the viewer layer and callback when finished
+            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), image.src, function(){
+              thumb.find('.loader').remove()
+              thumb.append($div(false, 'icon delete'))
+            })
+          }
+        }).click(thumb.loadViewer)
+        .appendTo($(DISGAEA.get('palette')).find('.drawer.'+layer))
       })
     })
   },
