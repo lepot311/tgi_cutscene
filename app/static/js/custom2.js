@@ -230,7 +230,7 @@ var DISGAEA = {
       .append($div(DISGAEA.get('toolbar')))
       .append($div(DISGAEA.get('bin')))
       // Create edit form
-      .append($("<form id='edit' action='' method='post'></form>"))
+      // .append($("<form id='edit' action='' method='post'></form>"))
     $(DISGAEA.get('toolbar'))
       // Create some buttons
       .append($div('add', 'button').text('Add slide').click(DISGAEA.addSlide))

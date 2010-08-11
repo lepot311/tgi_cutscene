@@ -4,10 +4,9 @@ ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; 
 ul li { list-style:none; margin:0; padding:0; }
 #palette { float:left; border:1px solid green; padding: 10px; }
 #palette ul { padding:0 0.15em; }
-#palette .thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; border:1px solid #666; margin:0.3em 0.15em; float:left; cursor:pointer; clear:left; position:relative; }
+#palette .thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; margin:0.3em 0.15em; float:left; cursor:pointer; clear:left; position:relative; }
 #bin { float:left; clear:left; border: 1px solid #999; width: 710px; padding: 10px 0 0 10px; }
-#bin .thumb { float:left; margin:0 0.6em 0.6em 0; overflow:hidden; border:1px solid #999; background:#D0D3EB; cursor:pointer; width:100px; height:60px; position:relative; border:1px solid #666; }
-#bin .thumb:hover { border-color:#D8DDE6; }
+#bin .thumb { float:left; margin:0 0.6em 0.6em 0; overflow:hidden; border:1px solid #999; background:#D0D3EB; cursor:pointer; width:100px; height:60px; position:relative; }
 #bin .thumb.active { border-color:#79C0E7; }
 #bin .thumb.active:hover .icon.reload { display:block; }
 #bin .thumb .number { color:#22243E; font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; }
@@ -15,6 +14,9 @@ ul li { list-style:none; margin:0; padding:0; }
 #bin .thumb .delete:hover { background-position:0 -12px; }
 #bin .thumb li { clear:both; }
 #bin .thumb img { width:100%; position:absolute; top:0; left:0; }
+.thumb { border:1px solid #666; }
+.thumb:hover { border-color:#D8DDE6; }
+
 
 /*div { float:left; overflow:auto; }*/
 div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; color:#404E6B; }
@@ -34,10 +36,10 @@ form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
 
 form { border: 1px solid blue; width:300px; height:300px; float:left; }
-#palette .drawer { background:#333; float: left; border:1px solid #999; margin-right:10px; }
+#palette .drawer { background:#333; float: left; border:1px solid #999; margin-right:10px; padding:5px; }
 #palette .drawer:last-child { margin:0; }
-#palette .drawer.bgImg { background:#C2E2EF; }
-#palette .drawer.charImg { background:#B8CCBC; }
+/*#palette .drawer.bgImg { background:#C2E2EF; }*/
+/*#palette .drawer.charImg { background:#B8CCBC; }*/
 
 #toolbar { float:left; padding: 10px; background:#444; outline: 1px solid #999; }
 #toolbar .button { padding:10px; background: #999; color: #222; text-align:center; margin-bottom:10px; }
