@@ -43,14 +43,14 @@ var DISGAEA = {
       jsonPath:         '/json/',
       layers: [
         {
-          name:   'bgImg',
-          depth:  0,
-          images: 1
+          name:      'bgImg',
+          depth:     0,
+          maxImages: 1
         },
         {
-          name:   'charImg',
-          depth:  1,
-          images: 2
+          name:      'charImg',
+          depth:     1,
+          maxImages: 2
         }
       ],
       // layers:           ['bgImg', 'charImg'],
@@ -66,12 +66,12 @@ var DISGAEA = {
   currentSlideshow: [],
   totalSlides: 0,
   
-  layer: function(shortName)
-  {
+  // layer: function(shortName)
+  // {
     // console.log('element', $(DISGAEA.defaults.palette).find('.'+shortName+' .thumb'))
     // console.log('form', $(DISGAEA.defaults.form).find('input#'+shortName))
     // console.log('viewer', $(DISGAEA.defaults.viewer).find('.layer.'+shortName))
-  },
+  // },
   
   // Helper functions
   get: function(key)
@@ -90,7 +90,7 @@ var DISGAEA = {
 
   jsonLayer: function(layer)
   {
-    $.getJSON(DISGAEA.get('jsonPath') + layer, function(data)
+    $.getJSON(DISGAEA.get('jsonPath') + layer.name, function(data)
     {
       // Add thumbs to palette
       $.each(data, function()
@@ -100,16 +100,17 @@ var DISGAEA = {
         $.extend(thumb, {
           loadViewer: function()
           {
+            $(DISGAEA.get('palette')).find('.'+layer.name+' .icon.delete').remove()
             // Add loader icon
             $(this).append($div(false, 'icon loader'))
             // Refresh the viewer layer and callback when finished
-            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), image.src, function(){
+            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer.name), image.src, function(){
               thumb.find('.loader').remove()
               thumb.append($div(false, 'icon delete'))
             })
           }
         }).click(thumb.loadViewer)
-        .appendTo($(DISGAEA.get('palette')).find('.drawer.'+layer))
+        .appendTo($(DISGAEA.get('palette')).find('.drawer.'+layer.name))
       })
     })
   },
@@ -176,23 +177,8 @@ var DISGAEA = {
 
   loadSlide: function(data)
   {
-    // console.log(data)
-    // $.each(data.layers, function(){
-    //   // var slide = this
-    //   DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
-    // })
     DISGAEA.addSlideBin(data)
   },
-  
-  // jsonSlide: function()
-  // // Gets a single slide
-  // {
-  //   $.getJSON(DISGAEA.get('jsonPath') + 'slide', function(data)
-  //   {
-  //     // console.log(data)
-  //     DISGAEA.loadSlide(data)
-  //   })
-  // },
   
   loadSlideshow: function()
   {
@@ -200,11 +186,6 @@ var DISGAEA = {
     {
       DISGAEA.loadSlide(this)
     })
-    // Refresh viewer with first slide
-    // $.each(DISGAEA.currentSlideshow[0].layers, function(){
-    //   // Refresh each layer in slide
-    //   DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
-    // })
   },
   
   jsonSlideshow: function()
@@ -219,6 +200,7 @@ var DISGAEA = {
   },
   
   loadPalette: function(layer)
+  // Request palette assets
   {
     DISGAEA.jsonLayer(layer)
   },
@@ -227,10 +209,6 @@ var DISGAEA = {
   {
     DISGAEA.totalSlides += 1
     console.log('adding slide (', DISGAEA.totalSlides, 'total)')
-    // $.each(DISGAEA.defaults.layers, function()
-    // {
-    //   DISGAEA.layer(this)
-    // })
   },
   
   saveSlide: function()
@@ -268,21 +246,9 @@ var DISGAEA = {
     // Populate layer palettes
     $.each(DISGAEA.get('layers'), function()
     {
-      DISGAEA.loadPalette(this.name)
+      DISGAEA.loadPalette(this)
     })
-    
-    // $.each(DISGAEA.defaults.layers, function()
-    // {
-    //   DISGAEA.layer(this.shortName)
-    // })
-    
-    // this.listen($('.thumb'), 'click', 'bgThingyTest')
-    
-    
-    
-    
   }
-  
 }
 
 DISGAEA.init()
