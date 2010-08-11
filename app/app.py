@@ -63,6 +63,34 @@ data = {
     }]
 }
 
+data['slide'] = [{
+                    'name': 'Test Slide 1',
+                    'layers': [
+                        {
+                            'name': 'bgImg',
+                            'data': data['bgImg'][0]
+                        },
+                        {
+                            'name': 'charImg',
+                            'data': data['charImg'][0]
+                        }
+                    ]
+                },
+                {
+                    'name': 'Test Slide 2',
+                    'layers': [
+                        {
+                            'name': 'bgImg',
+                            'data': data['bgImg'][1]
+                        },
+                        {
+                            'name': 'charImg',
+                            'data': data['charImg'][0]
+                        }
+                    ]
+                }]
+
+
 class index:
     def GET(self):
         return render.index(cache=False)

@@ -14,12 +14,20 @@ String.prototype.normalize = function()
 }
 
 // jQuery object generator to reduce code size (thanks to Jack Moore)
-function $div(id, class, css)
+function $div(id, c, css)
 {
-  id = id ? ' id="' + id.normalize() + '"' : '';
-  class = class ? ' class="' + class.normalize() + '"' : '';
-  css = css ? ' style="' + css + '"' : '';
-  return $('<div' + id + class + css + '/>');
+  id = id ? ' id="' + id.normalize() + '"' : ''
+  c = c ? ' class="' + c.normalize() + '"' : ''
+  css = css ? ' style="' + css + '"' : ''
+  return $('<div' + id + c + css + '/>')
+}
+
+function $img(src, f)
+{
+  var i = new Image()
+  i.src = src
+  if (f) f()
+  return $(i)
 }
 
 var DISGAEA = {
@@ -33,7 +41,19 @@ var DISGAEA = {
       form:             '#edit',
       imagePath:        '/static/img/',
       jsonPath:         '/json/',
-      layers:           ['bgImg', 'charImg'],
+      layers: [
+        {
+          name:   'bgImg',
+          depth:  0,
+          images: 1
+        },
+        {
+          name:   'charImg',
+          depth:  1,
+          images: 2
+        }
+      ],
+      // layers:           ['bgImg', 'charImg'],
       palette:          '#palette',
       slideDir:         '/static/img/',
       textLength:       0,
@@ -43,6 +63,7 @@ var DISGAEA = {
       transitionSpeed:  300,
       viewer:           '#viewer'
     },
+  currentSlideshow: [],
   totalSlides: 0,
   
   layer: function(shortName)
@@ -90,7 +111,7 @@ var DISGAEA = {
   //   })
   // },
   
-  json: function(layer)
+  jsonLayer: function(layer)
   {
     $.getJSON(DISGAEA.get('jsonPath') + layer, function(data)
     {
@@ -102,23 +123,98 @@ var DISGAEA = {
             .click(function(e)
             {
               e.preventDefault()
-              DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), $(this).attr('href'))
+              // Cache the thumbnail for callback
+              var thumb = $(this)
+              // Remove all icons from thumbnail
+              thumb.find('.icon').remove()
+              // Add loader icon
+              thumb.append($div(false, 'icon loader'))
+              // Refresh the viewer layer and callback when finished
+              DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), $(this).attr('href'), function(){
+                thumb.find('.loader').remove()
+                thumb.append($div(false, 'icon delete'))
+              })
             }))
       })
     })
   },
-
-  refreshLayer: function(layer, src)
+  
+  refreshLayer: function(layer, src, f)
   {
+    // console.log('refreshing', layer, src)
     $(layer).stop().fadeTo(DISGAEA.get('transitionSpeed'), 0, function()
     {
-      $(this).css('background-image', 'url('+DISGAEA.get('slideDir')+src+')').fadeTo(DISGAEA.get('transitionSpeed'), 1)
+      $(this).append($img(DISGAEA.get('slideDir')+src, function()
+      {
+        // console.log('loaded:', layer)
+        $(layer).fadeTo(DISGAEA.get('transitionSpeed'), 1)
+      }))
+      if (f) f()
     })
   },
 
+  addSlideBin: function(slide)
+  // Add a slide representation to the bin
+  {
+    // console.log(slide)
+    var thumb = $div(false, 'slide').hide()
+    $.each(slide.layers, function()
+    {
+      $(thumb).append($img(DISGAEA.get('slideDir') + this.data.src))
+    })
+    $(DISGAEA.get('bin')).append(thumb)
+    $(thumb).fadeIn()
+  },
+
+  loadSlide: function(data)
+  {
+    // console.log('loading slide "', data.name, '"')
+    // $.each(data.layers, function(){
+    //   // var slide = this
+    //   DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
+    // })
+    DISGAEA.addSlideBin(data)
+  },
+  
+  // jsonSlide: function()
+  // // Gets a single slide
+  // {
+  //   $.getJSON(DISGAEA.get('jsonPath') + 'slide', function(data)
+  //   {
+  //     // console.log(data)
+  //     DISGAEA.loadSlide(data)
+  //   })
+  // },
+  
+  loadSlideshow: function()
+  {
+    $.each(DISGAEA.currentSlideshow, function()
+    {
+      DISGAEA.loadSlide(this)
+    })
+    // Refresh viewer with first slide
+    $.each(DISGAEA.currentSlideshow[0].layers, function(){
+      // Refresh each layer in slide
+      DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
+    })
+    // Add "active" class to first bin slide
+    $(DISGAEA.get('bin')).find('.slide:first').addClass('active')
+  },
+  
+  jsonSlideshow: function()
+  // Gets an array of slides
+  {
+    $.getJSON(DISGAEA.get('jsonPath') + 'slide', function(data)
+    {
+      // console.log(data)
+      DISGAEA.currentSlideshow = data
+      DISGAEA.loadSlideshow()
+    })
+  },
+  
   loadPalette: function(layer)
   {
-    DISGAEA.json(layer)
+    DISGAEA.jsonLayer(layer)
   },
 
   addSlide: function()
@@ -129,6 +225,11 @@ var DISGAEA = {
     // {
     //   DISGAEA.layer(this)
     // })
+  },
+  
+  saveSlide: function()
+  {
+    console.log('saving slide')
   },
   
   init: function(options)
@@ -151,14 +252,14 @@ var DISGAEA = {
     $.each(DISGAEA.get('layers'), function()
     {
       $(DISGAEA.get('palette'))
-        .append($div(false, this).addClass('drawer'))
+        .append($div(false, this.name).addClass('drawer'))
       $(DISGAEA.get('viewer'))
-        .append($div(false, this).addClass('layer').hide())
+        .append($div(false, this.name).addClass('layer').hide())
     })
     // Populate layer palettes
     $.each(DISGAEA.get('layers'), function()
     {
-      DISGAEA.loadPalette(this)
+      DISGAEA.loadPalette(this.name)
     })
     
     // $.each(DISGAEA.defaults.layers, function()
@@ -167,6 +268,12 @@ var DISGAEA = {
     // })
     
     // this.listen($('.thumb'), 'click', 'bgThingyTest')
+    
+    
+    
+    
+    // Load test slide
+    DISGAEA.jsonSlideshow()
   }
   
 }

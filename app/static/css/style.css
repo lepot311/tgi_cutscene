@@ -4,15 +4,17 @@ ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; 
 ul li { list-style:none; margin:0; padding:0; }
 #palette { float:left; border:1px solid green; padding: 10px; }
 #palette ul { padding:0 0.15em; }
-#palette .thumb, #bin .thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; border:1px solid #666; margin:0.3em 0.15em; float:left; cursor:pointer; clear:left; }
-#bin .slide { float:left; margin:0 0.6em 0.6em 0; overflow:auto; border:1px solid #999; background:#D0D3EB; cursor:pointer; }
-#bin .slide:hover { background:#D8DDE6; }
-#bin .slide.active { background:#79C0E7; color:#222; }
+#palette .thumb, #bin .thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; border:1px solid #666; margin:0.3em 0.15em; float:left; cursor:pointer; clear:left; position:relative; }
+#bin { float:left; clear:left; border: 1px solid #999; width: 710px; padding: 10px 0 0 10px; }
+#bin .slide { float:left; margin:0 0.6em 0.6em 0; overflow:hidden; border:1px solid #999; background:#D0D3EB; cursor:pointer; width:100px; height:60px; position:relative; }
+#bin .slide:hover { border-color:#D8DDE6; }
+#bin .slide.active { border-color:#79C0E7; }
 #bin .slide .number { color:#22243E; font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; }
 #bin .slide .delete { float:right; display:block; width:12px; height:12px; background:url(/static/img/delete.png) no-repeat 0 0; cursor:pointer; }
 #bin .slide .delete:hover { background-position:0 -12px; }
 #bin .slide li { clear:both; }
 #bin .slide .thumb { clear:none; }
+#bin .slide img { width:100%; position:absolute; top:0; left:0; }
 
 /*div { float:left; overflow:auto; }*/
 div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; color:#404E6B; }
@@ -41,4 +43,6 @@ form { border: 1px solid blue; width:300px; height:300px; float:left; }
 #toolbar .button { padding:10px; background: #999; color: #222; text-align:center; margin-bottom:10px; }
 #toolbar .button:last-child { margin:0; }
 #toolbar .button:hover { background: #ccc; }
-#bin { float:left; clear:left; border: 1px solid #999; width: 600px; height:100px; }
+.thumb .icon { position: absolute; width:100%; height:100%; }
+.thumb .icon.loader { background:url(/static/img/loader.gif) no-repeat center; opacity:0.6; }
+.thumb .icon.delete { background:url(/static/img/delete.png) no-repeat center; opacity:0.6; }
