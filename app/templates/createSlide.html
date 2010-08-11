@@ -10,8 +10,8 @@
 </head>
 <body>
     <div id="viewer">
-        <div class="layer bg"></div>
-        <div class="layer char"></div>
+        <div class="layer bgImg"></div>
+        <div class="layer charImg"></div>
         <div class="layer dialogWrapper">
             <div class="layer dialog">
                 <div class="text">
@@ -26,7 +26,7 @@
         </form>
     </div>
     <div id="palette">
-        <div id="bg">
+        <div id="bgImg">
             <div class="title">Backgrounds</div>
             <ul>
             {% for img in bgThumbs %}
@@ -36,7 +36,7 @@
             {% endfor %}
             </ul>
         </div>
-        <div id="char">
+        <div id="charImg">
             <div class="title">Characters</div>
             <ul>
             {% for img in charThumbs %}
