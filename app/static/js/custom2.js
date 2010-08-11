@@ -88,29 +88,6 @@ var DISGAEA = {
     }
   },
 
-  // listen: function(element, trigger, variable)
-  // {
-  //   // Set up a listener
-  //   $(element).bind(trigger, function(e)
-  //   {
-  //     e.preventDefault()
-  //     DISGAEA.debug('> ' + element + ' <')
-  //     currentSlide[variable] = $(this).attr('href')
-  //     $('form input').find('#'+variable).val(currentSlide[variable])
-  //     $('#viewer .layer.'+variable)
-  //       .stop()
-  //       .fadeTo(get(transitionSpeed), 0, function()
-  //       {
-  //         $(this)
-  //           .css('background-image', 'url('+get(imagePath)+currentSlide[variable]+')')
-  //           .fadeTo(get(transitionSpeed), 1)
-  //       })
-  //     updateSlideBin()
-  //     // // If successful, set bin thumbnail to match
-  //     // getCurrentSlideBin().find('.thumb.bgImg').css('background-image', $(this).css('background-image'))
-  //   })
-  // },
-  
   jsonLayer: function(layer)
   {
     $.getJSON(DISGAEA.get('jsonPath') + layer, function(data)
@@ -123,16 +100,16 @@ var DISGAEA = {
             .click(function(e)
             {
               e.preventDefault()
+              // Remove all icons from thumbnail
+              $(this).find('.icon').remove()
+              // Add loader icon
+                .append($div(false, 'icon loader'))
               // Cache the thumbnail for callback
               var thumb = $(this)
-              // Remove all icons from thumbnail
-              thumb.find('.icon').remove()
-              // Add loader icon
-              thumb.append($div(false, 'icon loader'))
               // Refresh the viewer layer and callback when finished
               DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer), $(this).attr('href'), function(){
                 thumb.find('.loader').remove()
-                thumb.append($div(false, 'icon delete'))
+                  .append($div(false, 'icon delete'))
               })
             }))
       })
@@ -144,6 +121,9 @@ var DISGAEA = {
     // console.log('refreshing', layer, src)
     $(layer).stop().fadeTo(DISGAEA.get('transitionSpeed'), 0, function()
     {
+      // First, remove all old images from this layer
+      $(this).find('img').remove()
+        // Add new image to this layer
       $(this).append($img(DISGAEA.get('slideDir')+src, function()
       {
         // console.log('loaded:', layer)
@@ -156,19 +136,49 @@ var DISGAEA = {
   addSlideBin: function(slide)
   // Add a slide representation to the bin
   {
-    // console.log(slide)
-    var thumb = $div(false, 'slide').hide()
+    var thumb = $div(false, 'thumb')
+    // Add some methods to thumb
+    $.extend(thumb, {
+        activate: function()
+        {
+          console.log('activating ->', slide.name)
+          // Refresh viewer with slide
+          $.each(slide.layers, function(){
+            // Refresh each layer in slide
+            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
+          })
+          
+          // Activate thumbnail in bin
+          $(DISGAEA.get('bin')).find('.thumb')
+            .removeClass('active')
+            .find('.reload').remove()
+          $(this)
+            .addClass('active')
+            .append($div(false, 'icon reload'))
+        }
+      })
+    
+    // Collect layers to build thumb
     $.each(slide.layers, function()
     {
+      // Composite layers
       $(thumb).append($img(DISGAEA.get('slideDir') + this.data.src))
     })
-    $(DISGAEA.get('bin')).append(thumb)
-    $(thumb).fadeIn()
+    // Add to bin
+    $(thumb)
+      .click(thumb.activate)
+      .hide()
+      .appendTo($(DISGAEA.get('bin')))
+      .fadeIn()
+    // Add "active" class to first bin slide
+    if (slide === DISGAEA.currentSlideshow[0]){
+      thumb.activate()
+    }
   },
 
   loadSlide: function(data)
   {
-    // console.log('loading slide "', data.name, '"')
+    // console.log(data)
     // $.each(data.layers, function(){
     //   // var slide = this
     //   DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
@@ -193,12 +203,10 @@ var DISGAEA = {
       DISGAEA.loadSlide(this)
     })
     // Refresh viewer with first slide
-    $.each(DISGAEA.currentSlideshow[0].layers, function(){
-      // Refresh each layer in slide
-      DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
-    })
-    // Add "active" class to first bin slide
-    $(DISGAEA.get('bin')).find('.slide:first').addClass('active')
+    // $.each(DISGAEA.currentSlideshow[0].layers, function(){
+    //   // Refresh each layer in slide
+    //   DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
+    // })
   },
   
   jsonSlideshow: function()
@@ -235,7 +243,10 @@ var DISGAEA = {
   init: function(options)
   {
     if (options) DISGAEA.options = options
-  // Create markup
+    // Load test slide
+    DISGAEA.jsonSlideshow()
+    
+    //// Create markup
     // Create containers
     $(DISGAEA.get('container'))
       .append($div(DISGAEA.get('viewer')))
@@ -272,8 +283,6 @@ var DISGAEA = {
     
     
     
-    // Load test slide
-    DISGAEA.jsonSlideshow()
   }
   
 }
