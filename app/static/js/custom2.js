@@ -73,6 +73,39 @@ var DISGAEA = {
     // console.log('viewer', $(DISGAEA.defaults.viewer).find('.layer.'+shortName))
   // },
   
+  // Objects
+  Thumb: function(images)
+  {
+    t = $div(false, 'thumb')
+
+    t.activate = function()
+    {
+      console.log('activate')
+      $(this)
+        .find('.icon.delete').remove()
+      // Add loader icon
+      $(this)
+        .append($div(false, 'icon loader'))
+        // Refresh the viewer layer and callback when finished
+        var thumb = this
+        $.each(images, function(){
+          DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+this.layer.name), this.src, function(){
+            $(thumb).find('.loader').remove()
+            $(thumb).append($div(false, 'icon delete'))
+          })
+        })
+    }
+
+    t.click(t.activate)
+
+    $.each(images, function()
+    {
+      $(t).append($img(DISGAEA.get('slideDir') + this.src))
+    })
+    console.log('created thumb ->', t)
+    return t
+  },
+  
   // Helper functions
   get: function(key)
   {
@@ -95,22 +128,8 @@ var DISGAEA = {
       // Add thumbs to palette
       $.each(data, function()
       {
-        var image = this
-        var thumb = $div(false, 'thumb', 'background:url('+DISGAEA.get('thumbDir')+this.thumb+')')
-        $.extend(thumb, {
-          loadViewer: function()
-          {
-            $(DISGAEA.get('palette')).find('.'+layer.name+' .icon.delete').remove()
-            // Add loader icon
-            $(this).append($div(false, 'icon loader'))
-            // Refresh the viewer layer and callback when finished
-            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+layer.name), image.src, function(){
-              thumb.find('.loader').remove()
-              thumb.append($div(false, 'icon delete'))
-            })
-          }
-        }).click(thumb.loadViewer)
-        .appendTo($(DISGAEA.get('palette')).find('.drawer.'+layer.name))
+        $(DISGAEA.get('palette')).find('.drawer.'+layer.name)
+          .append($(DISGAEA.Thumb([{ src: this.src, layer: layer }])))
       })
     })
   },
@@ -135,44 +154,32 @@ var DISGAEA = {
   addSlideBin: function(slide)
   // Add a slide representation to the bin
   {
-    var thumb = $div(false, 'thumb')
-    // Add some methods to thumb
-    $.extend(thumb, {
-        activate: function()
-        {
-          console.log('activating ->', slide.name)
-          // Refresh viewer with slide
-          $.each(slide.layers, function(){
-            // Refresh each layer in slide
-            DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.'+this.name), this.data.src)
-          })
-          
-          // Activate thumbnail in bin
-          $(DISGAEA.get('bin')).find('.thumb')
-            .removeClass('active')
-            .find('.reload').remove()
-          $(this)
-            .addClass('active')
-            .append($div(false, 'icon reload'))
-        }
-      })
-    
+    // var thumb = $div(false, 'thumb')
+    // // Add some methods to thumb
+    // $.extend(thumb, {
+    //       // Activate thumbnail in bin
+    //       $(DISGAEA.get('bin')).find('.thumb')
+    //         .removeClass('active')
+    //         .find('.reload').remove()
+    //       $(this)
+    //         .addClass('active')
+    //         .append($div(false, 'icon reload'))
+    //     }
+    //   })
+    // 
     // Collect layers to build thumb
+    var images = []
     $.each(slide.layers, function()
     {
-      // Composite layers
-      $(thumb).append($img(DISGAEA.get('slideDir') + this.data.src))
+      images.push({ src: this.data.src, layer: this })
     })
-    // Add to bin
-    $(thumb)
-      .click(thumb.activate)
-      .hide()
-      .appendTo($(DISGAEA.get('bin')))
-      .fadeIn()
+    $(DISGAEA.get('bin'))
+      .append($(DISGAEA.Thumb(images)))
+    
     // Add "active" class to first bin slide
-    if (slide === DISGAEA.currentSlideshow[0]){
-      thumb.activate()
-    }
+    // if (slide === DISGAEA.currentSlideshow[0]){
+    //   thumb.activate()
+    // }
   },
 
   loadSlide: function(data)
