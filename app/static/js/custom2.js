@@ -63,49 +63,50 @@ var DISGAEA = {
       transitionSpeed:  300,
       viewer:           '#viewer'
     },
+  currentBin: [],
   currentSlideshow: [],
   totalSlides: 0,
-  
-  // layer: function(shortName)
-  // {
-    // console.log('element', $(DISGAEA.defaults.palette).find('.'+shortName+' .thumb'))
-    // console.log('form', $(DISGAEA.defaults.form).find('input#'+shortName))
-    // console.log('viewer', $(DISGAEA.defaults.viewer).find('.layer.'+shortName))
-  // },
-  
+
   // Objects
   Thumb: function(images)
   {
-    t = $div(false, 'thumb')
-
-    t.activate = function()
+    // console.log('thumb ->', this)
+    var thumb = this
+    this.element = $div(false, 'thumb')
+    this.images = images
+    
+    this.deactivate = function()
     {
-      console.log('activate')
-      $(this)
-        .find('.icon.delete').remove()
-      // Add loader icon
-      $(this)
-        .append($div(false, 'icon loader'))
-        // Refresh the viewer layer and callback when finished
-        var thumb = this
-        $.each(images, function(){
-          DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+this.layer.name), this.src, function(){
-            $(thumb).find('.loader').remove()
-            $(thumb).append($div(false, 'icon delete'))
-          })
-        })
+      console.log('deactivate ->', this)
+      // Attach listeners
+      $(this.element).click(thumb.activate)
+      // $(DISGAEA.get('viewer')).find('.layer.' + this.layer.name).remove()
     }
-
-    t.click(t.activate)
-
+    
+    this.activate = function()
+    {
+      console.log('activate ->', this)
+      // Remove delete icon
+      // $(this.element).find('.icon.delete').remove()
+      // Add loader icon
+      $(this.element).append($div(false, 'icon loader'))
+        // .click(thumb.deactivate)
+        // Refresh the viewer layer and callback when finished
+      $.each(images, function(){
+        DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+this.layer.name), this.src, function(){
+          $(thumb.element).find('.loader').remove()
+          // $(thumb.element).append($div(false, 'icon delete'))
+        })
+      })
+    }
+    // Initialize
     $.each(images, function()
     {
-      $(t).append($img(DISGAEA.get('slideDir') + this.src))
+      $(thumb.element).append($img(DISGAEA.get('slideDir') + this.src))
     })
-    console.log('created thumb ->', t)
-    return t
+    this.deactivate()
   },
-  
+
   // Helper functions
   get: function(key)
   {
@@ -129,7 +130,7 @@ var DISGAEA = {
       $.each(data, function()
       {
         $(DISGAEA.get('palette')).find('.drawer.'+layer.name)
-          .append($(DISGAEA.Thumb([{ src: this.src, layer: layer }])))
+          .append(new DISGAEA.Thumb([{ src: this.src, layer: layer }]).element)
       })
     })
   },
@@ -173,8 +174,10 @@ var DISGAEA = {
     {
       images.push({ src: this.data.src, layer: this })
     })
+    var slide = new DISGAEA.Thumb(images)
+    DISGAEA.currentBin.push(slide)
     $(DISGAEA.get('bin'))
-      .append($(DISGAEA.Thumb(images)))
+      .append(slide.element)
     
     // Add "active" class to first bin slide
     // if (slide === DISGAEA.currentSlideshow[0]){
@@ -193,6 +196,7 @@ var DISGAEA = {
     {
       DISGAEA.loadSlide(this)
     })
+    DISGAEA.currentBin[0].activate()
   },
   
   jsonSlideshow: function()
@@ -259,5 +263,4 @@ var DISGAEA = {
 }
 
 DISGAEA.init()
-
 });
