@@ -14,7 +14,7 @@ ul li { list-style:none; margin:0; padding:0; }
 #bin .thumb .delete:hover { background-position:0 -12px; }
 #bin .thumb li { clear:both; }
 
-.thumb { border:1px solid #666; overflow:hidden; width:100px; height:60px; position:relative; background:#000; }
+.thumb { border:1px solid #666; overflow:hidden; width:100px; height:60px; position:relative; background:#000 url(/static/img/stripes.png) repeat 0 0; }
 .thumb:hover { border-color:#D8DDE6; }
 .thumb img { /*width:100%; */position:absolute; top:0; left:0; }
 

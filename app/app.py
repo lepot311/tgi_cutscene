@@ -37,29 +37,16 @@ data = {
     }],
     'charImg': [
     {
-        'name': 'Devotress',
-        'thumb': '_devotress.jpg',
-        'src': 'devotress.png'
+        'name': 'Sonic',
+        'src': 'sonic.png'
     },
     {
-        'name': 'Pangolan',
-        'thumb': '_pangolan.jpg',
-        'src': 'pangolan.png'
+        'name': 'Tails',
+        'src': 'tails.png'
     },
     {
-        'name': 'Illusionist',
-        'thumb': '_illusionist.jpg',
-        'src': 'illusionist.png'
-    },
-    {
-        'name': 'Pitfighter',
-        'thumb': '_pitfighter.jpg',
-        'src': 'pitfighter.png'
-    },
-    {
-        'name': 'Dungeon Archer',
-        'thumb': '_dungeonarcher.jpg',
-        'src': 'dungeonarcher.png'
+        'name': 'Big',
+        'src': 'big.png'
     }]
 }
 
@@ -85,7 +72,7 @@ data['slide'] = [{
                         },
                         {
                             'name': 'charImg',
-                            'data': data['charImg'][0]
+                            'data': data['charImg'][2]
                         }
                     ]
                 }]

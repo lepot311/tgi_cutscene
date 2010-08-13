@@ -26,8 +26,7 @@ function $img(src, f)
 {
   var i = new Image()
   i.src = src
-  if (f) f()
-  // console.log('img', i, i.width, $(i)[0].width)
+  if (f) i.onload = f
   return $(i)
 }
 
@@ -95,15 +94,38 @@ var DISGAEA = {
         // Refresh the viewer layer and callback when finished
       $.each(images, function(){
         DISGAEA.refreshLayer($(DISGAEA.get('viewer')).find('.layer.'+this.layer.name), this.src, function(){
-          $(thumb.element).find('.loader').remove()
+          // $(thumb.element).find('.loader').remove()
           // $(thumb.element).append($div(false, 'icon delete'))
         })
       })
     }
+    
+    this.resizeFill = function()
+    // Resize images to fill thumb
+    {
+      var cw = $(this.element).width(),
+          ch = $(this.element).height()
+      $.each(this.element.find('img'), function()
+      {
+        while ($(this).width() > cw && $(this).height() > ch)
+        {
+          $(this).width($(this).width()-1)
+        }
+      })
+    }
+    
     // Initialize
     $.each(images, function()
     {
-      $(thumb.element).append(DISGAEA.resizeFill($img(DISGAEA.get('slideDir') + this.src), $(thumb.element)))
+      // Create img and append to thumb
+      $(thumb.element).append($img(DISGAEA.get('slideDir') + this.src, function()
+      {
+        // Resize image to fill thumb
+        thumb.resizeFill()
+        $(thumb.element).find('.loader').remove()
+        // Fade in gracefully
+        $(this).hide().css('visibility', 'visible').fadeIn(DISGAEA.transitionSpeed)
+      }).css('visibility', 'hidden'))
     })
     this.deactivate()
   },
@@ -115,16 +137,6 @@ var DISGAEA = {
     return this.options ? this.options[key] : this.defaults[key]
   },
   
-  resizeFill: function(image, container)
-  // Return dimensions for image resized to fill the provided container
-  {
-    var size = [image[0].width, image[0].height],
-        big = Math.max(size[0], size[1]),
-        small = Math.min(size[0], size[1])
-    console.log('resizeFill', image, container, ':', big, small)
-    return $(image).width(200)
-  },
-
   debug: function(string)
   {
     if (this.get('debug') == true)
@@ -140,8 +152,10 @@ var DISGAEA = {
       // Add thumbs to palette
       $.each(data, function()
       {
+        var thumb = new DISGAEA.Thumb([{ src: this.src, layer: layer }])
         $(DISGAEA.get('palette')).find('.drawer.'+layer.name)
-          .append(new DISGAEA.Thumb([{ src: this.src, layer: layer }]).element)
+          .append(thumb.element)
+        thumb.resizeFill()
       })
     })
   },
@@ -189,7 +203,9 @@ var DISGAEA = {
     DISGAEA.currentBin.push(slide)
     $(DISGAEA.get('bin'))
       .append(slide.element)
-    
+
+    // slide.resizeFill()
+
     // Add "active" class to first bin slide
     // if (slide === DISGAEA.currentSlideshow[0]){
     //   thumb.activate()
