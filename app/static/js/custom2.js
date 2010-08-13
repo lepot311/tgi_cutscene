@@ -118,14 +118,16 @@ var DISGAEA = {
     $.each(images, function()
     {
       // Create img and append to thumb
-      $(thumb.element).append($img(DISGAEA.get('slideDir') + this.src, function()
-      {
-        // Resize image to fill thumb
-        thumb.resizeFill()
-        $(thumb.element).find('.loader').remove()
-        // Fade in gracefully
-        $(this).hide().css('visibility', 'visible').fadeIn(DISGAEA.transitionSpeed)
-      }).css('visibility', 'hidden'))
+      $(thumb.element)
+        .append($div(false, 'icon loader'))
+        .append($img(DISGAEA.get('slideDir') + this.src, function()
+        {
+          // Resize image to fill thumb
+          thumb.resizeFill()
+          $(thumb.element).find('.loader').remove()
+          // Fade in gracefully
+          $(this).hide().css('visibility', 'visible').fadeIn(DISGAEA.transitionSpeed)
+        }).css('visibility', 'hidden'))
     })
     this.deactivate()
   },

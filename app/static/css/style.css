@@ -4,7 +4,7 @@ ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; 
 ul li { list-style:none; margin:0; padding:0; }
 #palette { float:left; border:1px solid green; padding: 10px; }
 #palette ul { padding:0 0.15em; }
-#palette .thumb { display:block; width:100px; height:60px; background-repeat:no-repeat; background-position:0 0; text-indent:-9999px; margin:0.3em 0.15em; float:left; cursor:pointer; clear:left; position:relative; }
+#palette .thumb { width:100px; height:60px; }
 #bin { float:left; clear:left; border: 1px solid #999; width: 710px; padding: 10px 0 0 10px; }
 #bin .thumb { float:left; margin:0 0.6em 0.6em 0; /*background:#D0D3EB; */cursor:pointer; width:200px; height:120px; }
 #bin .thumb.active { border-color:#79C0E7; }
