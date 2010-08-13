@@ -45,6 +45,26 @@ data = {
         'src': 'tails.png'
     },
     {
+        'name': 'Knuckles',
+        'src': 'knuckles.png'
+    },
+    {
+        'name': 'Amy',
+        'src': 'amy.png'
+    },
+    {
+        'name': 'Shadow',
+        'src': 'shadow.png'
+    },
+    {
+        'name': 'Shade',
+        'src': 'shade.png'
+    },
+    {
+        'name': 'Dr. Robotnik',
+        'src': 'robotnik.png'
+    },
+    {
         'name': 'Big',
         'src': 'big.png'
     }]
