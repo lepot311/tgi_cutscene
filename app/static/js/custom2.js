@@ -27,6 +27,7 @@ function $img(src, f)
   var i = new Image()
   i.src = src
   if (f) f()
+  // console.log('img', i, i.width, $(i)[0].width)
   return $(i)
 }
 
@@ -77,7 +78,7 @@ var DISGAEA = {
     
     this.deactivate = function()
     {
-      console.log('deactivate ->', this)
+      // console.log('deactivate ->', this)
       // Attach listeners
       $(this.element).click(thumb.activate)
       // $(DISGAEA.get('viewer')).find('.layer.' + this.layer.name).remove()
@@ -102,7 +103,7 @@ var DISGAEA = {
     // Initialize
     $.each(images, function()
     {
-      $(thumb.element).append($img(DISGAEA.get('slideDir') + this.src))
+      $(thumb.element).append(DISGAEA.resizeFill($img(DISGAEA.get('slideDir') + this.src), $(thumb.element)))
     })
     this.deactivate()
   },
@@ -112,6 +113,16 @@ var DISGAEA = {
   {
     // Get variable or default
     return this.options ? this.options[key] : this.defaults[key]
+  },
+  
+  resizeFill: function(image, container)
+  // Return dimensions for image resized to fill the provided container
+  {
+    var size = [image[0].width, image[0].height],
+        big = Math.max(size[0], size[1]),
+        small = Math.min(size[0], size[1])
+    console.log('resizeFill', image, container, ':', big, small)
+    return $(image).width(200)
   },
 
   debug: function(string)

@@ -16,7 +16,7 @@ ul li { list-style:none; margin:0; padding:0; }
 
 .thumb { border:1px solid #666; overflow:hidden; width:100px; height:60px; position:relative; background:#000; }
 .thumb:hover { border-color:#D8DDE6; }
-.thumb img { width:100%; position:absolute; top:0; left:0; }
+.thumb img { /*width:100%; */position:absolute; top:0; left:0; }
 
 /*div { float:left; overflow:auto; }*/
 div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; color:#404E6B; }
