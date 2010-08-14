@@ -74,11 +74,13 @@ data['slide'] = [{
                     'name': 'Test Slide 1',
                     'layers': [
                         {
-                            'name': 'bgImg',
-                            'data': data['bgImg'][0]
+                            'name':  'bgImg',
+                            'depth': 0,
+                            'data':  data['bgImg'][0]
                         },
                         {
                             'name': 'charImg',
+                            'depth': 1,
                             'data': data['charImg'][0]
                         }
                     ]
@@ -87,12 +89,22 @@ data['slide'] = [{
                     'name': 'Test Slide 2',
                     'layers': [
                         {
-                            'name': 'bgImg',
-                            'data': data['bgImg'][1]
+                            'name':  'bgImg',
+                            'depth': 0,
+                            'data':  data['bgImg'][1]
                         },
                         {
-                            'name': 'charImg',
-                            'data': data['charImg'][2]
+                            'name':  'altLayer',
+                            'depth': 1,
+                            'delay': 1000,
+                            'data':  data['charImg'][4],
+                            'side':  1
+                        },
+                        {
+                            'name':  'charImg',
+                            'depth': 2,
+                            'data':  data['charImg'][2],
+                            'side':  0
                         }
                     ]
                 }]

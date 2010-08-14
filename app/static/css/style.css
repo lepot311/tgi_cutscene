@@ -4,7 +4,8 @@ ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; 
 ul li { list-style:none; margin:0; padding:0; }
 #palette { float:left; border:1px solid green; padding: 10px; }
 #palette ul { padding:0 0.15em; }
-#palette .thumb { width:100px; height:60px; }
+#palette .thumb { margin-bottom:5px; }
+#palette .thumb:last-child { margin-bottom:0; }
 #bin { float:left; clear:left; border: 1px solid #999; width: 710px; padding: 10px 0 0 10px; }
 #bin .thumb { float:left; margin:0 0.6em 0.6em 0; /*background:#D0D3EB; */cursor:pointer; width:200px; height:120px; }
 #bin .thumb.active { border-color:#79C0E7; }
@@ -24,9 +25,7 @@ form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111;
 form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
 #viewer { float:left; width:720px; height:480px; position:relative; background:#000; overflow:hidden; }
-.layer { position:absolute; background-repeat:no-repeat; background-position:0 0 }
-.layer.bgImg { top:0; left:0; width:720px; height:480px; z-index:1 }
-.layer.charImg { top:0; width:400px; height:300px; z-index:2; outline:1px solid red; }
+.layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; left:0; }
 .layer.dialogWrapper { bottom:-180px; left:0; width:720px; height:180px; z-index:3; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
 .layer.dialog { width:720px; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
 .layer.dialog .text { margin:30px; }
@@ -49,3 +48,7 @@ form { border: 1px solid blue; width:300px; height:300px; float:left; }
 .thumb .icon.loader { background:url(/static/img/loader.gif) no-repeat center; opacity:0.6; }
 .thumb .icon.delete { background:url(/static/img/delete.png) no-repeat center; opacity:0.6; }
 .thumb .icon.reload { background:url(/static/img/reload.png) no-repeat center; opacity:0.8; display:none; }
+
+#viewer .info { background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; right:0; bottom:0; z-index:99; }
+#viewer .info div { padding:0.2em 0; }
+#viewer .info .even { color:orange; }
