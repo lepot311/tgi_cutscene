@@ -70,7 +70,7 @@ data = {
     }]
 }
 
-data['slide'] = [{
+data['slideshow'] = [{
                     'name': 'Test Slide 1',
                     'layers': [
                         {
@@ -108,6 +108,15 @@ data['slide'] = [{
                         }
                     ]
                 }]
+
+data['palettes'] = [{
+                     'name': 'Backgrounds',
+                     'data': data['bgImg']
+                    },
+                    {
+                     'name': 'Characters',
+                     'data': data['charImg']
+                    }]
 
 
 class index:
