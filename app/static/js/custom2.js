@@ -13,8 +13,16 @@ String.prototype.normalize = function()
   }
 }
 
+Object.prototype.inherit = function(parent)
+{
+  this.prototype = DISGAEA.Thumb
+  this.prototype.constructor = this
+  this.prototype.call(this)
+}
+
+
 // Return number of keys in object
-Object.size = function(obj) {
+Object.prototype.size = function(obj) {
   var size = 0, key
   for (key in obj) {
     if (obj.hasOwnProperty(key)) size++
@@ -50,19 +58,6 @@ var DISGAEA = {
       form:             '#edit',
       imagePath:        '/static/img/',
       jsonPath:         '/json/',
-      // layers: [
-      //   {
-      //     name:      'bgImg',
-      //     depth:     0,
-      //     maxImages: 1
-      //   },
-      //   {
-      //     name:      'charImg',
-      //     depth:     1,
-      //     maxImages: 2
-      //   }
-      // ],
-      // layers:           ['bgImg', 'charImg'],
       palette:          '#palette',
       slideDir:         '/static/img/',
       textLength:       0,
@@ -262,11 +257,11 @@ var DISGAEA = {
         var iw = $(this).width(),
             ih = $(this).height(),
             big = Math.max(iw, ih),
-            small = Math.min(iw, ih)
-        var ratio = big / small
+            small = Math.min(iw, ih),
+            ratio = big / small
         while (iw / ratio > ch && ih * ratio > cw && iw > cw && ih > ch)
         {
-          iw--
+          iw -= 10
         }
         $(this).width(iw)
       })
@@ -275,9 +270,7 @@ var DISGAEA = {
 
   BinThumb: function(slide)
   {
-    this.prototype = DISGAEA.Thumb
-    this.prototype.constructor = this
-    DISGAEA.Thumb.call(this)
+    this.inherit(DISGAEA.Thumb)
     var thumb = this
     this.slide = slide
     // Initialize
@@ -331,9 +324,7 @@ var DISGAEA = {
   PaletteThumb: function(img)
   {
     // console.log('--in Palette Thumb', img)
-    this.prototype = DISGAEA.Thumb
-    this.prototype.constructor = this
-    DISGAEA.Thumb.call(this)
+    this.inherit(DISGAEA.Thumb)
     this.img = img
     var thumb = this
 
@@ -411,28 +402,6 @@ var DISGAEA = {
     })
   },
   
-  // loadPalettes: function(layer)
-  // // Render palette assets from layer array
-  // {
-  //   console.log('palettes ->', DISGAEA.layers)
-  //   $.each(DISGAEA.layers, function()
-  //   {
-  //     // Create image palettes
-  //     // console.log(DISGAEA.currentSlideshow[0])
-  //     // console.log('pt maker', new DISGAEA.PaletteThumb(DISGAEA.currentSlideshow[0]))
-  //     $(DISGAEA.get('palette'))
-  //       .append($div(false, this.name).addClass('drawer')
-  //         // .append(new DISGAEA.PaletteThumb().element)
-  //       )
-  //     // Create layer palette
-  //     $(DISGAEA.layerPalette.element)
-  //       .append($div(false, 'layer')
-  //         .append($div(false, 'depth').text(this.depth))
-  //         .append($div(false, 'name').text(this.name))
-  //       )
-  //   })
-  // },
-
   loadPalettes: function(layer)
   // Render palette assets from JSON request
   {
