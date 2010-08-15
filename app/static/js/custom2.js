@@ -89,7 +89,7 @@ var DISGAEA = {
     this.element = $div('layer_palette')
     
     // Initialize
-    console.log('init layer palette')
+    // console.log('init layer palette')
   },
 
   Slide: function(data)
@@ -108,7 +108,7 @@ var DISGAEA = {
     }
 
     // Initialize
-    console.log('new slide')
+    // console.log('new slide')
     this.renderLayers()
   },
 
@@ -164,7 +164,7 @@ var DISGAEA = {
     }
     
     // Initialize
-    console.log('new layer ->', this, data)
+    // console.log('new layer ->', this, data)
     this.populate()
     $(layer.element).hover(function()
     {
@@ -259,10 +259,16 @@ var DISGAEA = {
           ch = $(this.element).height()
       $.each(this.element.find('img'), function()
       {
-        while ($(this).width() > cw && $(this).height() > ch)
+        var iw = $(this).width(),
+            ih = $(this).height(),
+            big = Math.max(iw, ih),
+            small = Math.min(iw, ih)
+        var ratio = big / small
+        while (iw / ratio > ch && ih * ratio > cw && iw > cw && ih > ch)
         {
-          $(this).width($(this).width()-1)
+          iw--
         }
+        $(this).width(iw)
       })
     }
   },
@@ -275,7 +281,7 @@ var DISGAEA = {
     var thumb = this
     this.slide = slide
     // Initialize
-    console.log('--initializing Bin Thumb', this.slide)
+    // console.log('--initializing Bin Thumb', this.slide)
 
     this.deactivate = function()
     {
@@ -324,7 +330,7 @@ var DISGAEA = {
   
   PaletteThumb: function(img)
   {
-    console.log('--in Palette Thumb', img)
+    // console.log('--in Palette Thumb', img)
     this.prototype = DISGAEA.Thumb
     this.prototype.constructor = this
     DISGAEA.Thumb.call(this)
@@ -332,10 +338,7 @@ var DISGAEA = {
     var thumb = this
 
     // Initialize
-    console.log('--initializing Palette Thumb')
-    console.log('----inherit from', this.prototype)
-    console.log('----append a div full of images')
-    console.log('----', this.img)
+    // console.log('--initializing Palette Thumb')
     // Create img and append to thumb
     $(thumb.element)
       .append($div(false, 'icon loader'))
@@ -355,31 +358,6 @@ var DISGAEA = {
     // Get variable or default
     return this.options ? this.options[key] : this.defaults[key]
   },
-  
-  debug: function(string)
-  {
-    if (this.get('debug') == true)
-    {
-      console.log('DEBUG', string)
-    }
-  },
-
-  // jsonLayer: function(layer)
-  // {
-  //   $.getJSON(DISGAEA.get('jsonPath') + layer.name, function(data)
-  //   {
-  //     console.log('response from jsonLayer', data)
-  //     // Add thumbs to palette
-  //     $.each(data, function()
-  //     {
-  //       var thumb = new DISGAEA.PaletteThumb([{ src: this.src, layer: layer }])
-  //       console.log('try', thumb, thumb.element)
-  //       $(DISGAEA.get('palette')).find('.drawer.'+layer.name)
-  //         .append(thumb.element)
-  //       thumb.resizeFill()
-  //     })
-  //   })
-  // },
   
   jsonPalettes: function(f)
   {
@@ -460,7 +438,7 @@ var DISGAEA = {
   {
     DISGAEA.jsonPalettes(function()
     {
-      console.log('palettes ->', DISGAEA.palettes)
+      // console.log('palettes ->', DISGAEA.palettes)
       $.each(DISGAEA.palettes, function()
       {
         // Create image palettes
