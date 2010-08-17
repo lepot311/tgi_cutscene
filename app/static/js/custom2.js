@@ -15,9 +15,8 @@ String.prototype.normalize = function()
 
 Object.prototype.inherit = function(parent)
 {
-  this.prototype = DISGAEA.Thumb
+  this.prototype = parent
   this.prototype.constructor = this
-  this.prototype.call(this)
 }
 
 
@@ -271,6 +270,7 @@ var DISGAEA = {
   BinThumb: function(slide)
   {
     this.inherit(DISGAEA.Thumb)
+    DISGAEA.Thumb.call(this)
     var thumb = this
     this.slide = slide
     // Initialize
@@ -325,8 +325,9 @@ var DISGAEA = {
   {
     // console.log('--in Palette Thumb', img)
     this.inherit(DISGAEA.Thumb)
-    this.img = img
+    DISGAEA.Thumb.call(this)
     var thumb = this
+    this.img = img
 
     // Initialize
     // console.log('--initializing Palette Thumb')
