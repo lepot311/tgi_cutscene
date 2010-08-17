@@ -44,6 +44,7 @@ function clone(object){
 var D = (function(){
   // private vars
   var currentBin = [],
+      currentSlide = {},
       currentSlideshow = [],
       layers = {},
       layerPalette = undefined,
@@ -55,11 +56,11 @@ var D = (function(){
     array.push(value)
   }
   return {
-    currentSlide: undefined,
     util: {},
-    // setCurrentSlide: function(slide){
-    //   this.currentSlide = slide
-    // },
+    setCurrentSlide: function(slide){
+      currentSlide = slide
+    },
+    getCurrentSlide: function(){ return currentSlide },
     setCurrentSlideshow: function(slideshow){
       this.currentSlideshow = slideshow
     },
@@ -116,8 +117,9 @@ D.Viewer = (function(){
     updateLog: function(){
       this.clearLog()
       var output = []
-      output.push(D.currentSlide.name)
-      $.each(D.currentSlide.layers, function()
+      console.log('current slide ->', D.getCurrentSlide())
+      output.push(D.getCurrentSlide().name)
+      $.each(D.getCurrentSlide().layers, function()
       {
         output.push(this.depth + ' ' + this.name)
       })
@@ -240,8 +242,6 @@ D.Layer = {
 }
   
 D.Thumb = {
-  thumb: this,
-  element: $div(false, 'thumb'),
   resizeFill: function(){
     // Resize images to fill thumb
     var cw = $(this.element).width(),
@@ -261,33 +261,10 @@ D.Thumb = {
 }
 
 D.BinThumb = clone(D.Thumb)
-D.BinThumb.deactivate = function(){
-    console.log('deactivate ->', this)
-    // Attach listeners
-    $(this.element).removeClass('active').click(this.activate)
-    // $(D.util.get('viewer')).find('.layer.' + this.layer.name).remove()
-  }
-D.BinThumb.activate = function(){
-    // Set current slide to target
-    D.currentSlide = this.slide
-    console.log('activate ->', this, ':', D.currentSlide)
-    // Remove delete icon
-    // $(this.element).find('.icon.delete').remove()
-    $(D.util.get('bin')).find('.thumb.active').removeClass('active')
-    $(this.element).addClass('active')
-    // Add loader icon
-    $(this.element).append($div(false, 'icon loader'))
-      // .click(thumb.deactivate)
-    D.Viewer.loadCurrentSlide(function(){
-    // Remove loader icon
-    $(this.element).find('.loader').remove()
-    })
-  }
 D.BinThumb.init = function(){
     var thumb = this
     $.each(this.slide.layers, function(){
       // Create img and append to thumb
-      console.log(thumb.element)
       $(thumb.element)
         .append($div(false, 'icon loader'))
         .append($img(D.util.get('slideDir') + this.data.src, function(){
@@ -299,6 +276,30 @@ D.BinThumb.init = function(){
         }).css('visibility', 'hidden'))
     })
     this.deactivate()
+  }
+D.BinThumb.deactivate = function(){
+    var thumb = this
+    console.log('deactivate ->', this)
+    // Attach listeners
+    $(this.element).removeClass('active').click(function(){ thumb.activate() })
+    // $(D.util.get('viewer')).find('.layer.' + this.layer.name).remove()
+  }
+D.BinThumb.activate = function(){
+    // Set current slide to target
+    console.log('check', this, this.slide)
+    D.setCurrentSlide(this.slide)
+    console.log('activate ->', this, ':', D.getCurrentSlide)
+    // Remove delete icon
+    // $(this.element).find('.icon.delete').remove()
+    $(D.util.get('bin')).find('.thumb.active').removeClass('active')
+    $(this.element).addClass('active')
+    // Add loader icon
+    $(this.element).append($div(false, 'icon loader'))
+      // .click(thumb.deactivate)
+    D.Viewer.loadCurrentSlide(function(){
+    // Remove loader icon
+    $(this.element).find('.loader').remove()
+    })
   }
 
 D.PaletteThumb = {
@@ -342,8 +343,8 @@ D.util.loadSlide = function(slide){
   var thumb = clone(D.BinThumb)
   thumb.element = $div(false, 'thumb')
   thumb.slide = slide
-  console.log('thumb ->', thumb)
   thumb.init()
+  console.log('thumb ->', thumb)
   // Add to bin
   D.appendCurrentBin(thumb)
   $(D.util.get('bin')).append(thumb.element)
