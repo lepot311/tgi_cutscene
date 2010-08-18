@@ -25,10 +25,13 @@ form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111;
 form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
 #viewer { float:left; width:720px; height:480px; position:relative; background:#000; overflow:hidden; }
-.layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; left:0; }
-.layer.dialogWrapper { bottom:-180px; left:0; width:720px; height:180px; z-index:3; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
-.layer.dialog { width:720px; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
-.layer.dialog .text { margin:30px; }
+.layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; }
+
+/*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
+
+.dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:98; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
+.dialogWrapper .dialog { width:100%; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
+.dialogWrapper .dialog .message { margin:30px; }*/
 /*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f/static/img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
 
 

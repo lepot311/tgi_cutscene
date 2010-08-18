@@ -81,9 +81,13 @@ data['slideshow'] = [{
                         {
                             'name': 'charImg',
                             'depth': 1,
-                            'data': data['charImg'][0]
+                            'delay': 1000,
+                            'data': data['charImg'][0],
+                            'animated': True,
+                            'side': 'left'
                         }
-                    ]
+                    ],
+                    'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
                 },
                 {
                     'name': 'Test Slide 2',
@@ -94,19 +98,15 @@ data['slideshow'] = [{
                             'data':  data['bgImg'][1]
                         },
                         {
-                            'name':  'altLayer',
-                            'depth': 1,
-                            'delay': 1000,
-                            'data':  data['charImg'][4],
-                            'side':  1
-                        },
-                        {
                             'name':  'charImg',
                             'depth': 2,
                             'data':  data['charImg'][2],
-                            'side':  0
+                            'side':  'right',
+                            'animated': True,
+                            'delay': 500
                         }
-                    ]
+                    ],
+                    'text': "Wow, this guy needs to clean his desk. What a mess!"
                 }]
 
 data['palettes'] = [{
