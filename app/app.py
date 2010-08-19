@@ -94,23 +94,6 @@ data['slideshow'] = [{
                             'animated': True,
                             'side': 'right',
                             'speed': 500
-                        },
-                        {
-                            'name': 'newLayer',
-                            'depth': 4,
-                            'data': data['charImg'][6],
-                            'animated': True,
-                            'side': 'left',
-                            'speed': 2500
-                        },
-                        {
-                            'name': 'newLayer',
-                            'depth': 2,
-                            'delay': 2000,
-                            'data': data['charImg'][7],
-                            'animated': True,
-                            'side': 'right',
-                            'speed': 1500
                         }
                     ],
                     'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
@@ -134,6 +117,26 @@ data['slideshow'] = [{
                         }
                     ],
                     'text': "Wow, this guy needs to clean his desk. What a mess!"
+                },
+                {
+                    'name': 'Test Slide 2',
+                    'layers': [
+                        {
+                            'name':  'bgImg',
+                            'depth': 0,
+                            'data':  data['bgImg'][1]
+                        },
+                        {
+                            'name':  'charImg',
+                            'depth': 2,
+                            'data':  data['charImg'][3],
+                            'side':  'right',
+                            'animated': True,
+                            'delay': 1500,
+                            'speed': 2000
+                        }
+                    ],
+                    'text': "Is it lunch time yet?"
                 }]
 
 data['palettes'] = [{

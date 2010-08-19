@@ -155,7 +155,7 @@ D.Viewer.play = function(){
     this.pause()
   } else {
     this.isPlaying = true
-    this.seek()
+    this.loadCurrentSlide()
   }
 }
 D.Viewer.pause = function(){
@@ -165,10 +165,23 @@ D.Viewer.seek = function(delta){
   console.log('seeking by', delta || 1)
   // Set the current slide to be the current slide plus the delta
   var current = D.getCurrentSlideshow().indexOf(D.getCurrentSlide()),
-      target = current + delta || 1
-  console.log('current', current, 'next', target)
-  D.setCurrentSlide(D.getCurrentSlideshow()[target])
-  this.loadCurrentSlide()
+      next = current + (delta || 1)
+      target = D.getCurrentSlideshow()[next]
+  // console.log('delta', delta, 'current', current, 'next', next)
+  // console.log(target)
+  if (target){
+    D.setCurrentSlide(target)
+    this.loadCurrentSlide()
+  } else {
+    if (D.getViewer().loop){
+      // Seek to beginning
+      console.log('loop')
+      D.setCurrentSlide(D.getCurrentSlideshow()[0])
+      this.loadCurrentSlide()
+    } else {
+      this.pause()
+    }
+  }
 }
 D.Viewer.slideFinished = function(){
   if (this.isPlaying === true){
@@ -238,6 +251,7 @@ D.Slide.animate = function(){
     target.slide.animate()
   } else {
     console.log('slide finished all animations')
+    D.getViewer().slideFinished()
   }
 }
 D.Slide.init = function(){
@@ -530,6 +544,7 @@ D.init = function(options){
   // Insert elements
   var viewer = clone(D.Viewer)
   viewer.init()
+  // viewer.loop = true
   D.setViewer(viewer)
   $(D.util.get('container'))
     .append(viewer.element)
