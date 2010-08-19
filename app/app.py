@@ -84,7 +84,33 @@ data['slideshow'] = [{
                             'delay': 1000,
                             'data': data['charImg'][0],
                             'animated': True,
-                            'side': 'left'
+                            'side': 'left',
+                            'speed': 1000
+                        },
+                        {
+                            'name': 'newLayer',
+                            'depth': 3,
+                            'data': data['charImg'][4],
+                            'animated': True,
+                            'side': 'right',
+                            'speed': 500
+                        },
+                        {
+                            'name': 'newLayer',
+                            'depth': 4,
+                            'data': data['charImg'][6],
+                            'animated': True,
+                            'side': 'left',
+                            'speed': 2500
+                        },
+                        {
+                            'name': 'newLayer',
+                            'depth': 2,
+                            'delay': 2000,
+                            'data': data['charImg'][7],
+                            'animated': True,
+                            'side': 'right',
+                            'speed': 1500
                         }
                     ],
                     'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
@@ -104,7 +130,7 @@ data['slideshow'] = [{
                             'side':  'right',
                             'animated': True,
                             'delay': 500,
-                            'speed': 3000
+                            'speed': 1000
                         }
                     ],
                     'text': "Wow, this guy needs to clean his desk. What a mess!"

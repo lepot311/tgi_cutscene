@@ -64,6 +64,7 @@ var D = (function(){
     setCurrentSlideshow: function(slideshow){
       this.currentSlideshow = slideshow
     },
+    getCurrentSlideshow: function(){ return this.currentSlideshow },
     setViewer: function(object){
       viewer = object
     },
@@ -141,11 +142,47 @@ D.Viewer.loadCurrentSlide = function(f){
       slide = clone(D.Slide)
   slide.data = D.getCurrentSlide()
   slide.element = $div(false, 'slide')
+  slide.queue = []
   slide.init()
   viewer.slide = slide
   $(this.element).append(slide.element)
   this.updateLog()
   if (f) f()
+}
+D.Viewer.play = function(){
+  console.log('said play')
+  if (this.isPlaying === true){
+    this.pause()
+  } else {
+    this.isPlaying = true
+    this.seek()
+  }
+}
+D.Viewer.pause = function(){
+  this.isPlaying = false
+}
+D.Viewer.seek = function(delta){
+  console.log('seeking by', delta || 1)
+  // Set the current slide to be the current slide plus the delta
+  var current = D.getCurrentSlideshow().indexOf(D.getCurrentSlide()),
+      target = current + delta || 1
+  console.log('current', current, 'next', target)
+  D.setCurrentSlide(D.getCurrentSlideshow()[target])
+  this.loadCurrentSlide()
+}
+D.Viewer.slideFinished = function(){
+  if (this.isPlaying === true){
+    this.seek()
+  }
+}
+D.Viewer.renderTransport = function(){
+  var viewer = this
+  $(this.element).append($div('transport')
+    .append($div(false, 'button')
+      .click(function(){
+        viewer.play()
+        console.log('pushed play button', viewer.isPlaying)
+      })))
 }
 D.Viewer.init = function(){
   // console.log('Initializing Viewer')
@@ -172,16 +209,40 @@ D.Slide = {}
 D.Slide.renderLayers = function(){
   var slide = this
   $.each(this.data.layers, function(){
+    slide.layersRemaining++
     // console.log('rendering layer', this.name, '-> viewer')
     var layer = clone(D.Layer)
     layer.data = this
     layer.slide = slide
-    layer.element = $div(false, 'layer').hide()
+    if (layer.data.animated){
+      layer.element = $div(false, 'layer').hide()
+    } else {
+      layer.element = $div(false, 'layer')
+    }
     layer.init()
   })
 }
+D.Slide.hasFinished = function(){
+  // Signal the viewer
+  D.getViewer().slideFinished()
+}
+D.Slide.ready = function(){
+  console.log('slide said ready')
+  this.isReady = true
+  this.animate()
+}
+D.Slide.animate = function(){
+  if (this.queue.length > 0){
+    var target = this.queue.shift()
+    console.log('-- animate ->', target)
+    target.slide.animate()
+  } else {
+    console.log('slide finished all animations')
+  }
+}
 D.Slide.init = function(){
   // console.log('new slide', this)
+  this.layersRemaining = 0
   this.renderLayers()
   // this.renderDialog()
 }
@@ -194,10 +255,14 @@ D.Slide.renderDialog = function(){
 D.Layer = {}
 D.Layer.populate = function(){
   var layer = this
+  this.imagesRemaining++
+  console.log('images remaining?', layer.imagesRemaining)
   $(this.slide.element)
     .append($(this.element)
       .append($img(D.util.get('slideDir')+layer.data.data.src, function(){
-        layer.appear()
+        layer.imagesRemaining--
+        console.log('loaded image. remaining:', layer.imagesRemaining)
+        if (layer.imagesRemaining === 0) layer.ready()
     }))
   )
   if (D.util.get('debug')){
@@ -208,6 +273,13 @@ D.Layer.populate = function(){
     // })
     // $(layer.element).append(tooltip)
   }
+}
+D.Layer.pushAnim = function(){
+  // Queue an array of animations for this layer
+  var anim = []
+  if (this.data.delay) anim.push({'delay': this.data.delay})
+  if (this.data.speed) anim.push({'appear': this.data.speed})
+  this.slide.queue.push({slide: this, data: anim})
 }
 D.Layer.highlight = function(){
   $(D.Viewer.element)
@@ -220,26 +292,33 @@ D.Layer.select = function(){
   D.Viewer.updateLog()
   this.highlight()
 }
-D.Layer.appear = function(){
+D.Layer.animate = function(){
+  console.log('layer.animate()')
   // Set side to animate in from
+  var layer = this
   var params = {},
       side = this.data.side || 'left'
   params[side] = 0
-  if (this.data.animated){
-    $(this.element)
-      .css(side, -$(this.element).width())
-      .show()
-      .delay(this.data.delay || 0)
-      .animate(params, this.data.speed || D.util.get('transitionSpeed'), function(){
-        // console.log('animated', this.data.name)
-      })
-  } else {
-    $(this.element).show()
-  }
+  $(this.element)
+    .css(side, -$(this.element).width())
+    .delay(this.data.delay || 0)
+    .show()
+    .animate(params, this.data.speed || D.util.get('transitionSpeed'), function(){
+      layer.slide.animate()
+    })
+}
+D.Layer.ready = function(){
+  console.log('layer ready')
+  this.slide.layersRemaining--
+  console.log('slide layers remaining', this.slide.layersRemaining)
+  if (this.slide.layersRemaining === 0) this.slide.ready()
 }
 D.Layer.init = function(){
   // var layer = this
   // console.log('new layer ->', this)
+  this.isReady = false
+  if (this.data.animated) this.pushAnim()
+  this.imagesRemaining = 0
   this.populate()
   // $(this.element).hover(function(){
   //   $(D.Viewer.element).find('.tooltip').hide()
@@ -268,6 +347,7 @@ D.Thumb.resizeFill = function(){
 D.BinThumb = clone(D.Thumb)
 D.BinThumb.init = function(){
   var thumb = this
+  this.index = D.getCurrentSlideshow().indexOf(this.slide)
   $.each(this.slide.layers, function(){
     // Create img and append to thumb
     $(thumb.element)
@@ -292,7 +372,7 @@ D.BinThumb.init = function(){
 D.BinThumb.activate = function(){
   // Set current slide to target
   var thumb = this
-  D.setCurrentSlide(this.slide)
+  D.setCurrentSlide(D.getCurrentSlideshow()[this.index])
   console.log('activate ->', this, ':', D.getCurrentSlide())
   this.makeActive()
   // Add loader icon
@@ -399,12 +479,15 @@ D.util.loadSlideshow = function(){
   D.util.loadPalettes()
   D.getCurrentBin()[0].activate()
 }
-D.util.jsonSlideshow = function(){
+D.util.jsonSlideshow = function(f){
   // Gets an array of slides
   $.getJSON(D.util.get('jsonPath') + 'slideshow', function(data){
     // console.log(data)
     D.setCurrentSlideshow(data)
     D.util.loadSlideshow()
+    console.log('slideshow loaded')
+    D.getViewer().renderTransport()
+    // D.getViewer().play()
   })
 }
 D.util.loadPalettes = function(layer){
@@ -441,8 +524,6 @@ D.util.saveSlide = function(){
 }
 D.init = function(options){
   if (options) D.options = options
-  // Load test slide
-  D.util.jsonSlideshow()
   //// Create markup
   // Create containers
     // D.layerPalette = new D.LayerPalette()
@@ -462,6 +543,10 @@ D.init = function(options){
     // Create some buttons
     .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
     .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
+  // Load test slide
+  D.util.jsonSlideshow(D.util.get('start'))
+  // console.log(D.getCurrentSlideshow())
+  // D.getViewer().seek()
 }
 ////////////////////////////
 D.init()

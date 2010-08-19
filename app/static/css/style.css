@@ -29,7 +29,7 @@ form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
 /*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
 
-.dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:98; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
+.dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:90; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
 .dialogWrapper .dialog { width:100%; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
 .dialogWrapper .dialog .message { margin:30px; }*/
 /*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f/static/img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
@@ -59,6 +59,10 @@ form { border: 1px solid blue; width:300px; height:300px; float:left; }
 #viewer .layer .highlight { background:rgba(13,199,246,0.25); width:100%; height:100%; position:absolute; left:0; top:0; }
 #viewer .layer .tooltip { display:none; left:0; top:0; background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; z-index:99;}
 #viewer .slide { width:100%; height:100%; }
+#viewer:hover #transport { display:block; }
+#viewer #transport { display:none; width:100%; height:40px; position:absolute; opacity:0.5; background:#000; bottom:10px; left: 0; z-index:98; }
+#viewer #transport .button { width:30px; height:30px; float:left; margin:5px; background:#999; border:1px solid #333; }
+#viewer #transport .button:hover { background:#ccc; }
 #layer_palette { background:black; color: #ccc; float:left; min-width:200px; }
 #layer_palette .layer { position:static; border: 1px solid #999; padding:6px 10px; }
 #layer_palette .layer div { display:inline; margin-right:4px; }
