@@ -103,7 +103,8 @@ data['slideshow'] = [{
                             'data':  data['charImg'][2],
                             'side':  'right',
                             'animated': True,
-                            'delay': 500
+                            'delay': 500,
+                            'speed': 3000
                         }
                     ],
                     'text': "Wow, this guy needs to clean his desk. What a mess!"

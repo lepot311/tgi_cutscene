@@ -64,6 +64,10 @@ var D = (function(){
     setCurrentSlideshow: function(slideshow){
       this.currentSlideshow = slideshow
     },
+    setViewer: function(object){
+      viewer = object
+    },
+    getViewer: function(){ return viewer },
     addLayer: function(name, layer){
       if (this.layers === undefined){
         this.layers = {}
@@ -100,11 +104,11 @@ D.defaults = {
   transitionSpeed:  300,
   viewer:           '#viewer'
 }
-
 console.log('D', D)
 
 //////////////////////////// Objects
 D.Viewer = {}
+D.Viewer.element = $div('viewer')
 D.Viewer.clearLog = function(){
   $(this.element).find('.info div').remove()
 }
@@ -117,46 +121,42 @@ D.Viewer.updateLog = function(){
     output.push(this.depth + ' ' + this.name)
   })
   $.each(output, function(){
-    $(D.Viewer.element).find('.info').append('<div>'+this+'</div>')
-    $(D.Viewer.element).find('.info')
+    $(D.getViewer().element).find('.info').append('<div>'+this+'</div>')
+    $(D.getViewer().element).find('.info')
       // Zebra stripe
       .find(':even').addClass('even')
   })
 }
 D.Viewer.clear = function(f){
-  D.Viewer.clearLog()
-  if ($(this.element).find('.layer').length === 0){
-  // If the viewer is empty
-    if (f) f()
-  } else {
-    $(this.element).find('.slide').stop().remove()
-    if (f) f()
-  }
+  this.clearLog()
+  $(this.element).find('.slide').stop().remove()
+  if (f) f()
 }
 D.Viewer.loadCurrentSlide = function(f){
   // Clear current viewer
-  this.clear(function(){
-    // Add new image to this layer
-    // console.log('loading current slide assets -> viewer')
-    var slide = clone(D.Slide)
-    slide.data = D.getCurrentSlide()
-    slide.element = $div(false, 'slide')
-    slide.init()
-    $(D.Viewer.element).append(slide.element)
-    D.Viewer.updateLog()
-    if (f) f()
-  })
+  this.clear()
+  // Add new image to this layer
+  // console.log('loading current slide assets -> viewer')
+  var viewer = this,
+      slide = clone(D.Slide)
+  slide.data = D.getCurrentSlide()
+  slide.element = $div(false, 'slide')
+  slide.init()
+  viewer.slide = slide
+  $(this.element).append(slide.element)
+  this.updateLog()
+  if (f) f()
 }
 D.Viewer.init = function(){
   // console.log('Initializing Viewer')
   // Create console if needed
   var viewer = this
-  if (D.util.get('debug') === true){
-    if ($(viewer.element).find('.info').length === 0){
-      console.log('Viewer debug console ENABLED')
-      $(viewer.element).append($div(false, 'info'))
-    }
-  }
+  // if (D.util.get('debug') === true){
+  //   if ($(viewer.element).find('.info').length === 0){
+  //     console.log('Viewer debug console ENABLED')
+  //     $(viewer.element).append($div(false, 'info'))
+  //   }
+  // }
 }
 
   // LayerPalette: function()
@@ -181,8 +181,14 @@ D.Slide.renderLayers = function(){
   })
 }
 D.Slide.init = function(){
-  // console.log('new slide')
+  // console.log('new slide', this)
   this.renderLayers()
+  // this.renderDialog()
+}
+D.Slide.renderDialog = function(){
+  var dialog = clone(D.Dialog).init()
+  console.log(dialog.element)
+  $(this.element).append(dialog.element)
 }
 
 D.Layer = {}
@@ -200,7 +206,7 @@ D.Layer.populate = function(){
     // $(D.Viewer.element).mousemove(function(e){
     //   $(tooltip).offset({top:e.pageY+offset, left:e.pageX+offset})
     // })
-    $(layer.element).append(tooltip)
+    // $(layer.element).append(tooltip)
   }
 }
 D.Layer.highlight = function(){
@@ -224,7 +230,7 @@ D.Layer.appear = function(){
       .css(side, -$(this.element).width())
       .show()
       .delay(this.data.delay || 0)
-      .animate(params, this.speed || D.util.get('transitionSpeed'), function(){
+      .animate(params, this.data.speed || D.util.get('transitionSpeed'), function(){
         // console.log('animated', this.data.name)
       })
   } else {
@@ -232,7 +238,7 @@ D.Layer.appear = function(){
   }
 }
 D.Layer.init = function(){
-  var layer = this
+  // var layer = this
   // console.log('new layer ->', this)
   this.populate()
   // $(this.element).hover(function(){
@@ -261,40 +267,40 @@ D.Thumb.resizeFill = function(){
 
 D.BinThumb = clone(D.Thumb)
 D.BinThumb.init = function(){
-    var thumb = this
-    $.each(this.slide.layers, function(){
-      // Create img and append to thumb
-      $(thumb.element)
-        .append($div(false, 'icon loader'))
-        .append($img(D.util.get('slideDir') + this.data.src, function(){
-          // Resize image to fill thumb
-          thumb.resizeFill()
-          $(thumb.element).find('.loader').remove()
-          // Fade in gracefully
-          $(this).hide().css('visibility', 'visible').fadeIn(D.util.get('transitionSpeed'))
-        }).css('visibility', 'hidden'))
-    })
-    this.deactivate()
-  }
-D.BinThumb.deactivate = function(){
-    var thumb = this
-    // console.log('deactivate ->', this)
-    // Attach listeners
-    $(this.element).removeClass('active')// .click(function(){ thumb.activate() })
-    // $(D.util.get('viewer')).find('.layer.' + this.layer.name).remove()
-  }
+  var thumb = this
+  $.each(this.slide.layers, function(){
+    // Create img and append to thumb
+    $(thumb.element)
+      .append($div(false, 'icon loader'))
+      .append($img(D.util.get('slideDir') + this.data.src, function(){
+        // Resize image to fill thumb
+        thumb.resizeFill()
+        $(thumb.element).find('.loader').remove()
+        // Fade in gracefully
+        $(this).hide().css('visibility', 'visible').fadeIn(D.util.get('transitionSpeed'))
+      }).css('visibility', 'hidden'))
+  })
+  // this.deactivate()
+}
+// D.BinThumb.deactivate = function(){
+//   var thumb = this
+//   // console.log('deactivate ->', this)
+//   // Attach listeners
+//   $(this.element).removeClass('active')// .click(function(){ thumb.activate() })
+//   // $(D.util.get('viewer')).find('.layer.' + this.layer.name).remove()
+// }
 D.BinThumb.activate = function(){
-    // Set current slide to target
-    var thumb = this
-    D.setCurrentSlide(this.slide)
-    console.log('activate ->', this, ':', D.getCurrentSlide())
-    this.makeActive()
-    // Add loader icon
-    $(this.element).append($div(false, 'icon loader'))
-    D.Viewer.loadCurrentSlide(function(){
-      $(thumb.element).find('.loader').remove()
-    })
-  }
+  // Set current slide to target
+  var thumb = this
+  D.setCurrentSlide(this.slide)
+  console.log('activate ->', this, ':', D.getCurrentSlide())
+  this.makeActive()
+  // Add loader icon
+  $(this.element).append($div(false, 'icon loader'))
+  D.getViewer().loadCurrentSlide(function(){
+    $(thumb.element).find('.loader').remove()
+  })
+}
 D.BinThumb.makeActive = function(){
   $(D.util.get('bin')).find('.thumb.active').removeClass('active')
   $(this.element).addClass('active')
@@ -322,7 +328,7 @@ D.Dialog.element = $div(false, 'dialogWrapper').append($div(false, 'dialog'))
 D.Dialog.element.click(function(){
   D.Dialog.clear()
 })
-D.Dialog.message = "Default dialog message"
+D.Dialog.message = "Enter text here"
 D.Dialog.init = function(){
   console.log('--init dialog box')
   return this
@@ -349,7 +355,6 @@ D.Dialog.popIn = function(){
     }, 1200, 'easeOutElastic', function(){
       console.log('done')
     })
-    .text('some text')
 }
 
 //////////////////////////// Helper functions
@@ -442,9 +447,9 @@ D.init = function(options){
   // Create containers
     // D.layerPalette = new D.LayerPalette()
   // Insert elements
-  var viewer = D.Viewer
-  viewer.element = $div('viewer')
+  var viewer = clone(D.Viewer)
   viewer.init()
+  D.setViewer(viewer)
   $(D.util.get('container'))
     .append(viewer.element)
     .append($div(D.util.get('palette')))
@@ -457,8 +462,6 @@ D.init = function(options){
     // Create some buttons
     .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
     .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
-  var dialog = D.Dialog
-  $(D.util.get('viewer')).append(dialog.init().element)
 }
 ////////////////////////////
 D.init()
