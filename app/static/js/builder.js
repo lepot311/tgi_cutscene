@@ -90,6 +90,10 @@ var D = (function(){
 //////////////////////////// default settings
 D.defaults = {
   bin:              '#bin',
+  colors:           {
+    'delay': 'blue',
+    'appear': 'red'
+  },
   container:        '#disgaea',
   debug:            true,
   direction:        undefined,
@@ -140,6 +144,7 @@ D.Viewer.loadCurrentSlide = function(f){
   // console.log('loading current slide assets -> viewer')
   var viewer = this,
       slide = clone(D.Slide)
+  if (this.dialog) this.dialog.clear()
   slide.data = D.getCurrentSlide()
   slide.element = $div(false, 'slide')
   slide.queue = []
@@ -189,13 +194,31 @@ D.Viewer.slideFinished = function(){
   }
 }
 D.Viewer.renderTransport = function(){
-  var viewer = this
-  $(this.element).append($div('transport')
-    .append($div(false, 'button')
-      .click(function(){
-        viewer.play()
-        console.log('pushed play button', viewer.isPlaying)
-      })))
+  var viewer = this,
+      transport = $div('transport')
+  $(this.element).append($div('transportWrapper')
+    .width($(viewer.element).width() - 20)
+    .append(transport
+      .append($div(false, 'button')
+        .click(function(){
+          viewer.play()
+          console.log('pushed play button', viewer.isPlaying)
+        }))))
+  this.transport = transport
+}
+D.Viewer.renderDialog = function(text){
+  if (!this.dialog){
+    var dialog = clone(D.Dialog)
+    dialog.init()
+    console.log('dialog ->', dialog.wrapper)
+    $(this.element).append(dialog.wrapper)
+    dialog.popIn()
+    this.dialog = dialog
+  }
+  // Update text
+  this.dialog.text = this.slide.data.text
+  // console.log('text length', this.dialog.text, this.dialog.text.length)
+  this.dialog.buildIn()
 }
 D.Viewer.init = function(){
   // console.log('Initializing Viewer')
@@ -242,8 +265,48 @@ D.Slide.hasFinished = function(){
 D.Slide.ready = function(){
   console.log('slide said ready')
   this.isReady = true
+  // this.addMarkers()
   this.animate()
 }
+// D.Slide.addMarkers = function(m){
+//   $(D.getViewer().transport).find('#markers').remove()
+//   console.log('adding markers')
+//   var markers = [],
+//       total = 0,
+//       width = 0,
+//       element = $div('markers'),
+//       type = ''
+//   $.each(this.queue, function(){
+//     console.log('***', this)
+//     var marker = {}
+//     if (this.slide.data.delay){
+//       marker['type'] = 'delay'
+//       marker['duration'] = this.slide.data.delay
+//       total += marker.duration
+//       markers.push(marker)
+//     }
+//     if (this.slide.data.speed){
+//       marker['type'] = 'appear'
+//       marker['duration'] = this.slide.data.speed
+//       total += marker.duration
+//       markers.push(marker)
+//     }
+//   })
+//   // unit = D.getViewer().transport.parent().width() / total
+//   $.each(markers, function(){
+//     // offset = this * unit
+//     width = Math.round((this.duration / total) * 100)
+//     console.log(width, D.util.get('colors')[this.type])
+//     // Add a marker element
+//     $(element)
+//       .append($div(false, 'marker')
+//         .css('background', D.util.get('colors')[this.type])
+//         .height(30)
+//         .width(width + '%'))
+//   })
+//   $(D.getViewer().transport).append(element)
+//   console.log('*****', markers)
+// }
 D.Slide.animate = function(){
   if (this.queue.length > 0){
     var target = this.queue.shift()
@@ -251,19 +314,14 @@ D.Slide.animate = function(){
     target.slide.animate()
   } else {
     console.log('slide finished all animations')
-    D.getViewer().slideFinished()
+    D.getViewer().renderDialog()
+    // D.getViewer().slideFinished()
   }
 }
 D.Slide.init = function(){
   // console.log('new slide', this)
   this.layersRemaining = 0
   this.renderLayers()
-  // this.renderDialog()
-}
-D.Slide.renderDialog = function(){
-  var dialog = clone(D.Dialog).init()
-  console.log(dialog.element)
-  $(this.element).append(dialog.element)
 }
 
 D.Layer = {}
@@ -291,8 +349,8 @@ D.Layer.populate = function(){
 D.Layer.pushAnim = function(){
   // Queue an array of animations for this layer
   var anim = []
-  if (this.data.delay) anim.push({'delay': this.data.delay})
-  if (this.data.speed) anim.push({'appear': this.data.speed})
+  if (this.delay) anim.push({'delay': this.delay})
+  if (this.speed) anim.push({'appear': this.speed})
   this.slide.queue.push({slide: this, data: anim})
 }
 D.Layer.highlight = function(){
@@ -418,37 +476,46 @@ D.PaletteThumb.init = function(){
 
 D.Dialog = {}
 D.Dialog.count = 0
-D.Dialog.element = $div(false, 'dialogWrapper').append($div(false, 'dialog'))
-D.Dialog.element.click(function(){
-  D.Dialog.clear()
-})
-D.Dialog.message = "Enter text here"
+D.Dialog.wrapper = $div(false, 'dialogWrapper')
+D.Dialog.element = $div(false, 'dialog')
+D.Dialog.message = $div(false, 'message')
+D.Dialog.visible = false
 D.Dialog.init = function(){
+  $(this.wrapper)
+    .append($(this.element)
+      .append(this.message))
   console.log('--init dialog box')
-  return this
 }
 D.Dialog.buildIn = function(){
-  console.log('--dialog: buiding in')
+  this.timer = setInterval(function(){
+    D.getViewer().dialog.appendLetter()
+  }, 30)
 }
-D.Dialog.buildingOut = function(){
-  console.log('--dialog: buiding out')
-}
-D.Dialog.nextLetter = function(){
-  this.count++
-  console.log('--dialog: count', this.count)
+D.Dialog.appendLetter = function(){
+  console.log('append letter.....')
+  if (this.count < this.text.length){
+    $(this.message).text($(this.message).text() + this.text[this.count])
+    this.count++
+  } else {
+    clearInterval(this.timer)
+    D.getViewer().slideFinished()
+  }
 }
 D.Dialog.clear = function(){
   console.log('--dialog: clear')
+  clearInterval(this.timer)
+  this.count = 0
+  $(this.message).text('')
 }
 D.Dialog.popIn = function(){
-  $(this.element)
+  $(this.wrapper)
     .css('bottom', -180)
-    .delay(D.util.get('transitionSpeed'))
     .animate({
       bottom: -50
-    }, 1200, 'easeOutElastic', function(){
+    }, 1400, 'easeOutElastic', function(){
       console.log('done')
     })
+  this.visible = true
 }
 
 //////////////////////////// Helper functions
