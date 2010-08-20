@@ -2,6 +2,7 @@ body { background:#444; color:#ccc; font:14px Arial; }
 a { text-decoration:none; color:#666; }
 ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; }
 ul li { list-style:none; margin:0; padding:0; }
+img.right { -moz-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: fliph; /*IE*/}
 #palette { float:left; border:1px solid green; padding: 10px; }
 #palette ul { padding:0 0.15em; }
 #palette .thumb { margin-bottom:5px; }
@@ -24,14 +25,15 @@ div .title { font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.
 form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111; font-weight:bold; }
 form .wrong { color:red; font-weight:normal; padding:0.15em; }
 
-#viewer { float:left; width:720px; height:480px; position:relative; background:#000; overflow:hidden; }
+#viewer { float:left; width:920px; height:480px; position:relative; background:#000; overflow:hidden; }
 .layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; }
 
 /*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
 
 .dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:90; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
-.dialogWrapper .dialog { width:100%; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
-.dialogWrapper .dialog .message { margin:30px; }
+.dialogWrapper .dialog { position:relative; width:100%; height:178px; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:26px; color:#46372A; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
+.dialogWrapper .dialog .arrow { position:absolute; width:40px; height:30px; top:-25px; left:0; background:url(/static/img/dialog_arrow.png) no-repeat center; }
+.dialogWrapper .dialog .message { margin:30px; text-shadow:rgba(70,55,42,0.3) 0 0.1em 0.1em;}
 /*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f/static/img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
 
 

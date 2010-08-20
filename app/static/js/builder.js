@@ -11,6 +11,10 @@ String.prototype.normalize = function(){
   }
 }
 
+String.prototype.startsWith = function(str){
+  return (this.indexOf(str) === 0)
+}
+
 Object.prototype.size = function(obj){
   // Return number of keys in object
   var size = 0, key
@@ -28,8 +32,9 @@ function $div(id, c, css){
   return $('<div' + id + c + css + '/>')
 }
 
-function $img(src, f){
+function $img(src, c, f){
   var i = new Image()
+  $(i).attr('class', c)
   i.src = src
   if (f) i.onload = f
   return $(i)
@@ -102,9 +107,11 @@ D.defaults = {
   jsonPath:         '/json/',
   palette:          '#palette',
   slideDir:         '/static/img/',
+  textColor:        '#46372A',
   textLength:       0,
   textSpeed:        30,
   thumbDir:         '/static/img/',
+  timeout:          1600,
   toolbar:          '#toolbar',
   transitionSpeed:  300,
   viewer:           '#viewer'
@@ -206,19 +213,24 @@ D.Viewer.renderTransport = function(){
         }))))
   this.transport = transport
 }
-D.Viewer.renderDialog = function(text){
-  if (!this.dialog){
-    var dialog = clone(D.Dialog)
-    dialog.init()
-    console.log('dialog ->', dialog.wrapper)
-    $(this.element).append(dialog.wrapper)
-    dialog.popIn()
-    this.dialog = dialog
+D.Viewer.renderDialog = function(layer){
+  console.log('renderDialog received', layer)
+  // Update text)
+  if (layer){
+    if (!this.dialog){
+      var dialog = clone(D.Dialog)
+      dialog.init()
+      console.log('creating dialog ->', dialog.wrapper)
+      $(this.element).append(dialog.wrapper)
+      dialog.popIn()
+      this.dialog = dialog
+    }
+
+    this.dialog.layer = layer
+    this.dialog.clear()
+    // console.log('text length', this.dialog.text, this.dialog.text.length)
+    this.dialog.buildIn()
   }
-  // Update text
-  this.dialog.text = this.slide.data.text
-  // console.log('text length', this.dialog.text, this.dialog.text.length)
-  this.dialog.buildIn()
 }
 D.Viewer.init = function(){
   // console.log('Initializing Viewer')
@@ -255,6 +267,10 @@ D.Slide.renderLayers = function(){
     } else {
       layer.element = $div(false, 'layer')
     }
+    // If a layer has character dialog
+    // if (layer.data.text){
+    //   D.getViewer().renderDialog({'layer': layer, 'text': layer.data.text})
+    // }
     layer.init()
   })
 }
@@ -263,7 +279,7 @@ D.Slide.hasFinished = function(){
   D.getViewer().slideFinished()
 }
 D.Slide.ready = function(){
-  console.log('slide said ready')
+  // console.log('slide said ready')
   this.isReady = true
   // this.addMarkers()
   this.animate()
@@ -314,7 +330,13 @@ D.Slide.animate = function(){
     target.slide.animate()
   } else {
     console.log('slide finished all animations')
-    D.getViewer().renderDialog()
+    $.each(this.data.layers, function(){
+      console.log('+', this)
+      if (this.text){
+        // D.getViewer().dialog.moveArrow()
+        D.getViewer().renderDialog(this)
+      }
+    })
     // D.getViewer().slideFinished()
   }
 }
@@ -331,7 +353,8 @@ D.Layer.populate = function(){
   console.log('images remaining?', layer.imagesRemaining)
   $(this.slide.element)
     .append($(this.element)
-      .append($img(D.util.get('slideDir')+layer.data.data.src, function(){
+      .append($img(layer.data.data.src, layer.data.side, function(){
+        layer.width = $(this).width()
         layer.imagesRemaining--
         console.log('loaded image. remaining:', layer.imagesRemaining)
         if (layer.imagesRemaining === 0) layer.ready()
@@ -380,9 +403,9 @@ D.Layer.animate = function(){
     })
 }
 D.Layer.ready = function(){
-  console.log('layer ready')
+  // console.log('layer ready')
   this.slide.layersRemaining--
-  console.log('slide layers remaining', this.slide.layersRemaining)
+  // console.log('slide layers remaining', this.slide.layersRemaining)
   if (this.slide.layersRemaining === 0) this.slide.ready()
 }
 D.Layer.init = function(){
@@ -424,7 +447,7 @@ D.BinThumb.init = function(){
     // Create img and append to thumb
     $(thumb.element)
       .append($div(false, 'icon loader'))
-      .append($img(D.util.get('slideDir') + this.data.src, function(){
+      .append($img(this.data.src, this.side, function(){
         // Resize image to fill thumb
         thumb.resizeFill()
         $(thumb.element).find('.loader').remove()
@@ -463,9 +486,10 @@ D.PaletteThumb.init = function(){
   // console.log('--initializing Palette Thumb')
   // Create img and append to thumb
   var thumb = this
+  console.log(this)
   $(this.element)
     .append($div(false, 'icon loader'))
-    .append($img(D.util.get('slideDir') + this.img.src, function(){
+    .append($img(this.img.src, '', function(){
       // Resize image to fill thumb
       thumb.resizeFill()
       $(thumb.element).find('.loader').remove()
@@ -479,31 +503,53 @@ D.Dialog.count = 0
 D.Dialog.wrapper = $div(false, 'dialogWrapper')
 D.Dialog.element = $div(false, 'dialog')
 D.Dialog.message = $div(false, 'message')
+D.Dialog.arrow = $div(false, 'arrow')
 D.Dialog.visible = false
 D.Dialog.init = function(){
   $(this.wrapper)
     .append($(this.element)
-      .append(this.message))
+      .append(this.message)
+        .append(this.arrow))
   console.log('--init dialog box')
 }
 D.Dialog.buildIn = function(){
+  var dialog = this,
+      params = {},
+      offset = $(D.getViewer().element).find('img[src$="'+this.layer.data.src+'"]').width() / 2
+  params[dialog.layer.side] = offset
+  $(this.message).css('color', this.layer.color || D.util.get('textColor'))
+  console.log('build in', params)
+  $(this.arrow)
+    .css({left: 'auto', right: 'auto', top: -15})
+    .css(params)
+    .animate({
+      'top': -30,
+      'opacity': 1
+    }, 100)
   this.timer = setInterval(function(){
     D.getViewer().dialog.appendLetter()
   }, 30)
 }
 D.Dialog.appendLetter = function(){
   console.log('append letter.....')
-  if (this.count < this.text.length){
-    $(this.message).text($(this.message).text() + this.text[this.count])
+  if (this.count < this.layer.text.length){
+    $(this.message).text($(this.message).text() + this.layer.text[this.count])
     this.count++
   } else {
     clearInterval(this.timer)
-    D.getViewer().slideFinished()
+    this.timer = setTimeout(function(){
+      D.getViewer().slideFinished()
+    }, D.getCurrentSlide().timeout || D.util.get('timeout'))
   }
 }
 D.Dialog.clear = function(){
   console.log('--dialog: clear')
+  $(this.arrow).animate({
+    'top': -15,
+    'opacity':0
+    }, 100)
   clearInterval(this.timer)
+  clearTimeout(this.timer)
   this.count = 0
   $(this.message).text('')
 }
@@ -523,6 +569,12 @@ D.util.get = function(key){
   // Get variable or default
   return D.options ? D.options[key] : D.defaults[key]
 }
+// D.util.processImagePaths = function(layer){
+//   console.log('process:', layer)
+//   $.each(D.getCurrentSlideshow(), function(){
+//     this.url = (layer.data.src.startsWith('http')) ? layer.data.src : D.util.get('slideDir') + layer.data.src
+//   })
+// }
 D.util.jsonPalettes = function(f){
   $.getJSON(D.util.get('jsonPath') + 'palettes', function(data)
   {
@@ -530,6 +582,12 @@ D.util.jsonPalettes = function(f){
     // Add thumbs to palette
     $.each(data, function()
     {
+      // // Process each image url in palette
+      // $.each(this.data, function(){
+      //   console.log(this, this.src)
+      //   D.util.processImagePaths(this)
+      // })
+      // console.log(this)
       D.appendPalettes(this)
     })
     if (f) f()
@@ -551,6 +609,7 @@ D.util.loadSlideshow = function(){
   $.each(D.currentSlideshow, function(){
     // Create layers from slides
     $.each(this.layers, function(index){
+      // D.util.processImagePaths(this)
       D.addLayer(this.name, this)
     })
     // Create bin thumbnail
@@ -611,7 +670,7 @@ D.init = function(options){
   // Insert elements
   var viewer = clone(D.Viewer)
   viewer.init()
-  // viewer.loop = true
+  viewer.loop = true
   D.setViewer(viewer)
   $(D.util.get('container'))
     .append(viewer.element)
@@ -626,7 +685,7 @@ D.init = function(options){
     .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
     .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
   // Load test slide
-  D.util.jsonSlideshow(D.util.get('start'))
+  D.util.jsonSlideshow()
   // console.log(D.getCurrentSlideshow())
   // D.getViewer().seek()
 }

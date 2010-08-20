@@ -23,50 +23,55 @@ data = {
     {
         'name': 'Aberas',
         'thumb': '_aberas.jpg',
-        'src': 'aberas.jpg'
+        'src': '/static/img/aberas.jpg'
     },
     {
         'name': 'Da Swamp',
         'thumb': '_trogkenswamps.jpg',
-        'src': 'trogkenswamps.jpg'
+        'src': '/static/img/trogkenswamps.jpg'
     },
     {
         'name': 'Faustus Estate',
         'thumb': '_faustusestate.jpg',
-        'src': 'faustusestate.jpg'
+        'src': '/static/img/faustusestate.jpg'
+    },
+    {
+        'name': 'Random',
+        'thumb': '',
+        'src': 'http://ns2lerk.com/images/EnvConceptLarge.jpg'
     }],
     'charImg': [
     {
         'name': 'Sonic',
-        'src': 'sonic.png'
+        'src': '/static/img/sonic.png'
     },
     {
         'name': 'Tails',
-        'src': 'tails.png'
+        'src': '/static/img/tails.png'
     },
     {
         'name': 'Knuckles',
-        'src': 'knuckles.png'
+        'src': '/static/img/knuckles.png'
     },
     {
         'name': 'Amy',
-        'src': 'amy.png'
+        'src': '/static/img/amy.png'
     },
     {
         'name': 'Shadow',
-        'src': 'shadow.png'
+        'src': '/static/img/shadow.png'
     },
     {
         'name': 'Shade',
-        'src': 'shade.png'
+        'src': '/static/img/shade.png'
     },
     {
         'name': 'Dr. Robotnik',
-        'src': 'robotnik.png'
+        'src': '/static/img/robotnik.png'
     },
     {
         'name': 'Big',
-        'src': 'big.png'
+        'src': '/static/img/big.png'
     }]
 }
 
@@ -76,7 +81,7 @@ data['slideshow'] = [{
                         {
                             'name':  'bgImg',
                             'depth': 0,
-                            'data':  data['bgImg'][0]
+                            'data':  data['bgImg'][3]
                         },
                         {
                             'name': 'charImg',
@@ -85,18 +90,10 @@ data['slideshow'] = [{
                             'data': data['charImg'][0],
                             'animated': True,
                             'side': 'left',
-                            'speed': 1000
-                        },
-                        {
-                            'name': 'newLayer',
-                            'depth': 3,
-                            'data': data['charImg'][4],
-                            'animated': True,
-                            'side': 'right',
-                            'speed': 500
+                            'speed': 1000,
+                            'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
                         }
                     ],
-                    'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
                 },
                 {
                     'name': 'Test Slide 2',
@@ -110,16 +107,17 @@ data['slideshow'] = [{
                             'name':  'charImg',
                             'depth': 2,
                             'data':  data['charImg'][2],
-                            'side':  'right',
+                            'side':  'left',
                             'animated': True,
                             'delay': 500,
-                            'speed': 1000
+                            'speed': 1000,
+                            'text': "Wow, this guy needs to clean his desk. What a mess!"
                         }
                     ],
-                    'text': "Wow, this guy needs to clean his desk. What a mess!"
+                    'timeout': 3000
                 },
                 {
-                    'name': 'Test Slide 2',
+                    'name': 'Test Slide 3',
                     'layers': [
                         {
                             'name':  'bgImg',
@@ -129,14 +127,67 @@ data['slideshow'] = [{
                         {
                             'name':  'charImg',
                             'depth': 2,
+                            'data':  data['charImg'][2],
+                            'side':  'left',
+                        },
+                        {
+                            'name':  'charImg',
+                            'depth': 2,
                             'data':  data['charImg'][3],
                             'side':  'right',
                             'animated': True,
                             'delay': 1500,
-                            'speed': 2000
+                            'speed': 300,
+                            'text': "Is it lunch time yet?",
+                            'color': '#FF66FF'
                         }
                     ],
-                    'text': "Is it lunch time yet?"
+                },
+                {
+                    'name': 'Test Slide 4',
+                    'layers': [
+                        {
+                            'name':  'bgImg',
+                            'depth': 0,
+                            'data':  data['bgImg'][3]
+                        },
+                        {
+                            'name':  'charImg',
+                            'depth': 1,
+                            'data':  data['charImg'][7],
+                            'side':  'left',
+                            'animated': True,
+                            'speed': 500,
+                            'text': "Hey Tails, great news. I got a house!"
+                        }
+                    ],
+                },
+                {
+                    'name': 'Test Slide 5',
+                    'layers': [
+                        {
+                            'name':  'bgImg',
+                            'depth': 0,
+                            'data':  data['bgImg'][3]
+                        },
+                        {
+                            'name':  'charImg2',
+                            'depth': 1,
+                            'data':  data['charImg'][7],
+                            'side':  'left',
+                        },
+                        {
+                            'name':  'charImg',
+                            'depth': 2,
+                            'data':  data['charImg'][1],
+                            'side':  'right',
+                            'animated': True,
+                            'delay': 500,
+                            'speed': 1500,
+                            'text': "Uh, yeah, that's super. But I won't help you move."
+                        }
+                    ],
+                    'timeout': 2000,
                 }]
 
 data['palettes'] = [{
