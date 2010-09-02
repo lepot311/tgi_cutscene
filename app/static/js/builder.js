@@ -94,6 +94,7 @@ var D = (function(){
 
 //////////////////////////// default settings
 D.defaults = {
+  assets:           undefined,
   bin:              '#bin',
   colors:           {
     'delay': 'blue',
@@ -107,6 +108,7 @@ D.defaults = {
   jsonPath:         '/json/',
   palette:          '#palette',
   slideDir:         '/static/img/',
+  slideshow:        undefined,
   textColor:        '#46372A',
   textLength:       0,
   textSpeed:        30,
@@ -204,7 +206,7 @@ D.Viewer.renderTransport = function(){
   var viewer = this,
       transport = $div('transport')
   $(this.element).append($div('transportWrapper')
-    .width($(viewer.element).width() - 20)
+    .width(D.getViewer().w - 20)
     .append(transport
       .append($div(false, 'button')
         .click(function(){
@@ -531,7 +533,7 @@ D.Dialog.buildIn = function(){
   }, 30)
 }
 D.Dialog.appendLetter = function(){
-  console.log('append letter.....')
+  // console.log('append letter.....')
   if (this.count < this.layer.text.length){
     $(this.message).text($(this.message).text() + this.layer.text[this.count])
     this.count++
@@ -605,6 +607,19 @@ D.util.loadSlide = function(slide){
   $(D.util.get('bin')).append(thumb.element)
 }
 D.util.loadSlideshow = function(){
+  var slideshow = D.util.get('slideshow')
+  if (slideshow === undefined){
+    D.util.jsonSlideshow()
+  } else {
+    D.setCurrentSlideshow(slideshow)
+  }
+  // render slideshow assets
+  D.util.renderSlideshow()
+  console.log('slideshow loaded')
+  D.getViewer().renderTransport()
+  // D.getViewer().play()
+}
+D.util.renderSlideshow = function(){
   // Iterate over all slides
   $.each(D.currentSlideshow, function(){
     // Create layers from slides
@@ -624,36 +639,40 @@ D.util.jsonSlideshow = function(f){
   $.getJSON(D.util.get('jsonPath') + 'slideshow', function(data){
     // console.log(data)
     D.setCurrentSlideshow(data)
-    D.util.loadSlideshow()
-    console.log('slideshow loaded')
-    D.getViewer().renderTransport()
-    // D.getViewer().play()
   })
 }
 D.util.loadPalettes = function(layer){
-  // Render palette assets from JSON request
-  D.util.jsonPalettes(function(){
-    // console.log('palettes ->', D.getPalettes())
-    $.each(D.getPalettes(), function(){
-      // Create image palettes
-      var palette = $div(false, 'drawer').text(this.name)
-      $(D.util.get('palette'))
-        .append(palette)
-      // Create Palette thumbs
-      $.each(this.data, function(){
-        var thumb = clone(D.PaletteThumb)
-        thumb.img = this
-        thumb.element = $div(false, 'thumb')
-        thumb.init()
-        $(palette).append(thumb.element)
+  var assets = D.util.get('assets')
+  if (assets === undefined){
+    // Render palette assets from JSON request
+    D.util.jsonPalettes(function(){
+      // console.log('palettes ->', D.getPalettes())
+      $.each(D.getPalettes(), function(){
+        // Create image palettes
+        var palette = $div(false, 'drawer').text(this.name)
+        $(D.util.get('palette'))
+          .append(palette)
+        // Create Palette thumbs
+        $.each(this.data, function(){
+          var thumb = clone(D.PaletteThumb)
+          thumb.img = this
+          thumb.element = $div(false, 'thumb')
+          thumb.init()
+          $(palette).append(thumb.element)
+        })
+        // Create layer palette
+        // $(D.layerPalette.element)
+        //   .append($div(false, 'layer')
+        //     .append($div(false, 'depth').text(this.depth))
+        //     .append($div(false, 'name').text(this.name)))
       })
-      // Create layer palette
-      // $(D.layerPalette.element)
-      //   .append($div(false, 'layer')
-      //     .append($div(false, 'depth').text(this.depth))
-      //     .append($div(false, 'name').text(this.name)))
     })
-  })
+  } else {
+    $.each(assets, function()
+    {
+      D.appendPalettes(this)
+    })
+  }
 }
 D.util.addSlide = function(){
   D.totalSlides += 1
@@ -684,11 +703,14 @@ D.init = function(options){
     // Create some buttons
     .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
     .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
-  // Load test slide
-  D.util.jsonSlideshow()
+  D.util.loadSlideshow()
   // console.log(D.getCurrentSlideshow())
   // D.getViewer().seek()
 }
 ////////////////////////////
-D.init()
+D.init({
+  assets: FF.assets,
+  slideshow: FF.slideshow,
+  container: '.promo_slider .content'
+  })
 });
