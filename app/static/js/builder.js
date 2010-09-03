@@ -119,7 +119,7 @@ D.defaults = {
   transitionSpeed:  300,
   viewer:           '#viewer'
 }
-console.log('D', D)
+// console.log('D', D)
 
 //////////////////////////// Objects
 D.Viewer = {}
@@ -165,7 +165,7 @@ D.Viewer.loadCurrentSlide = function(f){
   if (f) f()
 }
 D.Viewer.play = function(){
-  console.log('said play')
+  // console.log('said play')
   if (this.isPlaying === true){
     this.pause()
   } else {
@@ -177,7 +177,7 @@ D.Viewer.pause = function(){
   this.isPlaying = false
 }
 D.Viewer.seek = function(delta){
-  console.log('seeking by', delta || 1)
+  // console.log('seeking by', delta || 1)
   // Set the current slide to be the current slide plus the delta
   var current = D.getCurrentSlideshow().indexOf(D.getCurrentSlide()),
       next = current + (delta || 1)
@@ -190,7 +190,7 @@ D.Viewer.seek = function(delta){
   } else {
     if (D.getViewer().loop){
       // Seek to beginning
-      console.log('loop')
+      // console.log('loop')
       D.setCurrentSlide(D.getCurrentSlideshow()[0])
       this.loadCurrentSlide()
     } else {
@@ -212,18 +212,18 @@ D.Viewer.renderTransport = function(){
       .append($div(false, 'button')
         .click(function(){
           viewer.play()
-          console.log('pushed play button', viewer.isPlaying)
+          // console.log('pushed play button', viewer.isPlaying)
         }))))
   this.transport = transport
 }
 D.Viewer.renderDialog = function(layer){
-  console.log('renderDialog received', layer)
+  // console.log('renderDialog received', layer)
   // Update text)
   if (layer){
     if (!this.dialog){
       var dialog = clone(D.Dialog)
       dialog.init()
-      console.log('creating dialog ->', dialog.wrapper)
+      // console.log('creating dialog ->', dialog.wrapper)
       $(this.element).append(dialog.wrapper)
       dialog.popIn()
       this.dialog = dialog
@@ -329,12 +329,12 @@ D.Slide.ready = function(){
 D.Slide.animate = function(){
   if (this.queue.length > 0){
     var target = this.queue.shift()
-    console.log('-- animate ->', target)
+    // console.log('-- animate ->', target)
     target.slide.animate()
   } else {
-    console.log('slide finished all animations')
+    // console.log('slide finished all animations')
     $.each(this.data.layers, function(){
-      console.log('+', this)
+      // console.log('+', this)
       if (this.text){
         // D.getViewer().dialog.moveArrow()
         D.getViewer().renderDialog(this)
@@ -353,27 +353,32 @@ D.Layer = {}
 D.Layer.populate = function(){
   var layer = this
   this.imagesRemaining++
-  console.log('images remaining?', layer.imagesRemaining)
+  // console.log('images remaining?', layer.imagesRemaining)
   $(this.slide.element)
     .append($(this.element)
       .append($img(layer.data.data.src, layer.data.side, function(){
-        layer.width = $(this).width()
+        layer.width = this.width
         layer.imagesRemaining--
-        console.log('loaded image. remaining:', layer.imagesRemaining)
+        // console.log('loaded image. remaining:', layer.imagesRemaining)
         if (layer.imagesRemaining === 0) layer.ready()
     }))
   )
+  // auto-resizing per layer
   if (this.data.resize) {
     $(this.element).find('img').height($(D.getViewer().element).height() + 80)
   }
-  if (D.util.get('debug')){
-    var tooltip = $div(false, 'tooltip').text(layer.data.name),
-        offset = 10
+  // move layer to correct side
+  this.side = this.data.side || 'left'
+  $(this.element).css(this.side, -$(this.element).width())
+
+  // if (D.util.get('debug')){
+    // var tooltip = $div(false, 'tooltip').text(layer.data.name),
+        // offset = 10
     // $(D.Viewer.element).mousemove(function(e){
     //   $(tooltip).offset({top:e.pageY+offset, left:e.pageX+offset})
     // })
     // $(layer.element).append(tooltip)
-  }
+  // }
 }
 D.Layer.pushAnim = function(){
   // Queue an array of animations for this layer
@@ -389,19 +394,17 @@ D.Layer.highlight = function(){
   $(this.element).addClass('active').append($div(false, 'highlight'))
 }
 D.Layer.select = function(){
-  console.log('select')
+  // console.log('select')
   D.Viewer.updateLog()
   this.highlight()
 }
 D.Layer.animate = function(){
-  console.log('layer.animate()')
+  // console.log('layer.animate()')
   // Set side to animate in from
   var layer = this
-  var params = {},
-      side = this.data.side || 'left'
-  params[side] = 0
+  var params = {}
+  params[this.side] = 0
   $(this.element)
-    .css(side, -$(this.element).width())
     .delay(this.data.delay || 0)
     .show()
     .animate(params, this.data.speed || D.util.get('transitionSpeed'), function(){
@@ -474,7 +477,7 @@ D.BinThumb.activate = function(){
   // Set current slide to target
   var thumb = this
   D.setCurrentSlide(D.getCurrentSlideshow()[this.index])
-  console.log('activate ->', this, ':', D.getCurrentSlide())
+  // console.log('activate ->', this, ':', D.getCurrentSlide())
   this.makeActive()
   // Add loader icon
   $(this.element).append($div(false, 'icon loader'))
@@ -492,7 +495,7 @@ D.PaletteThumb.init = function(){
   // console.log('--initializing Palette Thumb')
   // Create img and append to thumb
   var thumb = this
-  console.log(this)
+  // console.log(this)
   $(this.element)
     .append($div(false, 'icon loader'))
     .append($img(this.img.src, '', function(){
@@ -516,7 +519,7 @@ D.Dialog.init = function(){
     .append($(this.element)
       .append(this.message)
         .append(this.arrow))
-  console.log('--init dialog box')
+  // console.log('--init dialog box')
 }
 D.Dialog.buildIn = function(){
   var dialog = this,
@@ -524,7 +527,7 @@ D.Dialog.buildIn = function(){
       offset = $(D.getViewer().element).find('img[src$="'+this.layer.data.src+'"]').width() / 2
   params[dialog.layer.side] = offset
   $(this.message).css('color', this.layer.color || D.util.get('textColor'))
-  console.log('build in', params)
+  // console.log('build in', params)
   $(this.arrow)
     .css({left: 'auto', right: 'auto', top: -15})
     .css(params)
@@ -549,7 +552,7 @@ D.Dialog.appendLetter = function(){
   }
 }
 D.Dialog.clear = function(){
-  console.log('--dialog: clear')
+  // console.log('--dialog: clear')
   $(this.arrow).animate({
     'top': -15,
     'opacity':0
@@ -567,7 +570,7 @@ D.Dialog.popIn = function(){
     .animate({
       bottom: -(this.wrapperHeight / 3.6)
     }, 1400, 'easeOutElastic', function(){
-      console.log('done')
+      // console.log('done')
     })
   this.visible = true
 }
@@ -625,7 +628,7 @@ D.util.loadSlideshow = function(){
     // render slideshow assets
     D.util.renderSlideshow()
   }
-  // D.getViewer().play()
+  D.getViewer().play()
 }
 D.util.renderSlideshow = function(){
   // Iterate over all slides
@@ -641,8 +644,8 @@ D.util.renderSlideshow = function(){
   // Create palettes
   D.util.loadPalettes()
   D.getCurrentBin()[0].activate()
-  console.log('slideshow loaded')
-  D.getViewer().renderTransport()
+  // console.log('slideshow loaded')
+  if (D.options['editor']) D.getViewer().renderTransport()
 }
 D.util.jsonSlideshow = function(f){
   // Gets an array of slides
@@ -688,10 +691,10 @@ D.util.loadPalettes = function(layer){
 }
 D.util.addSlide = function(){
   D.totalSlides += 1
-  console.log('adding slide (', D.totalSlides, 'total)')
+  // console.log('adding slide (', D.totalSlides, 'total)')
 }
 D.util.saveSlide = function(){
-  console.log('saving slide')
+  // console.log('saving slide')
 }
 D.init = function(options){
   if (options) D.options = options
@@ -705,26 +708,29 @@ D.init = function(options){
   D.setViewer(viewer)
   $(D.util.get('container'))
     .append(viewer.element)
-    .append($div(D.util.get('palette')))
-    .append($div(D.util.get('toolbar')))
-    .append($div(D.util.get('bin')))
-    // .append(D.layerPalette.element)
-    // Create edit form
-    // .append($("<form id='edit' action='' method='post'></form>"))
-  $(D.util.get('toolbar'))
-    // Create some buttons
-    .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
-    .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
+  if (D.options['editor'] == true){
+    $(D.util.get('container'))
+      .append($div(D.util.get('palette')))
+      .append($div(D.util.get('toolbar')))
+      .append($div(D.util.get('bin')))
+      // .append(D.layerPalette.element)
+      // Create edit form
+      // .append($("<form id='edit' action='' method='post'></form>"))
+    $(D.util.get('toolbar'))
+      // Create some buttons
+      .append($div('add', 'button').text('Add slide').click(function(){ D.addSlide() }))
+      .append($div('saveSlide', 'button').text('Save to Bin').click(function(){ D.saveSlide }))
+  }
   D.util.loadSlideshow()
   // console.log(D.getCurrentSlideshow())
   // D.getViewer().seek()
 }
 ////////////////////////////
-// D.init({
-//   assets: FF.assets,
-//   slideshow: FF.slideshow,
-//   container: '.promo_slider .content'
-//   })
-D.init({resize: true})
+D.init({
+  assets: FF.assets,
+  slideshow: FF.slideshow,
+  container: '.promo_slider .content',
+  dialogWrapperHeight: 130
+  })
 });
 

@@ -1,5 +1,5 @@
 /* Viewer */
-#viewer { float:left; width:100%; height:100%; width: 960px; height:328px; position:relative; background:#000; overflow:hidden; }
+#viewer { float:left; width:100%; height:100%; z-index:0; position:relative; background:#000; overflow:hidden; }
 #viewer body { background:#444; color:#ccc; font:14px Arial; }
 #viewer a { text-decoration:none; color:#666; }
 #viewer ul { margin:0; padding:0; clear:left; overflow:auto; border-top:1px solid #eee; }
@@ -10,16 +10,16 @@
 #viewer form input { background:#888; border:1px solid #ccc; padding:0.15em; color:#111; font-weight:bold; }
 #viewer form .wrong { color:red; font-weight:normal; padding:0.15em; }
 #viewer .layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; }
-/*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
-#viewer .dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:98; padding-top:6px; background:url(/static/img/dialogShadow.png) repeat-x 0 0; }
-#viewer .dialogWrapper .dialog { position:relative; width:100%; height:100%; background:#E9E4D5 url(/static/img/d2.jpg) repeat 0 0; font-size:26px; color:#46372A; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
-#viewer .dialogWrapper .dialog .arrow { position:absolute; width:40px; height:30px; top:-25px; left:0; background:url(/static/img/dialog_arrow.png) no-repeat center; }
+/*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(../img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
+#viewer .dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:98; padding-top:6px; background:url(../img/dialogShadow.png) repeat-x 0 0; }
+#viewer .dialogWrapper .dialog { position:relative; width:100%; height:100%; background:#E9E4D5 url(../img/d2.jpg) repeat 0 0; font-size:26px; color:#46372A; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
+#viewer .dialogWrapper .dialog .arrow { position:absolute; width:40px; height:30px; top:-25px; left:0; background:url(../img/dialog_arrow.png) no-repeat center; }
 #viewer .dialogWrapper .dialog .message { margin:30px; text-shadow:rgba(70,55,42,0.3) 0 0.1em 0.1em;}
-/*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f/static/img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
+/*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f../img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
 #viewer .info { background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; right:0; top:0; z-index:99; }
 #viewer .info div { padding:0.2em 0; }
 #viewer .info .even { color:orange; }
-/*#viewer .layer.active { background: url(/static/img/stripes.png) repeat 0 0; }*/
+/*#viewer .layer.active { background: url(../img/stripes.png) repeat 0 0; }*/
 #viewer .layer .highlight { background:rgba(13,199,246,0.25); width:100%; height:100%; position:absolute; left:0; top:0; }
 #viewer .layer .tooltip { display:none; left:0; top:0; background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; z-index:99;}
 #viewer .slide { width:100%; height:100%; }
@@ -42,11 +42,11 @@
 #bin .thumb.active { border-color:#79C0E7; }
 #bin .thumb.active:hover .icon.reload { display:block; }
 #bin .thumb .number { color:#22243E; font-weight:bold; float:none; background:#D8DDE6; padding:0.15em 0.3em; border-bottom:1px solid #999; }
-#bin .thumb .delete { float:right; display:block; width:12px; height:12px; background:url(/static/img/delete.png) no-repeat 0 0; cursor:pointer; }
+#bin .thumb .delete { float:right; display:block; width:12px; height:12px; background:url(../img/delete.png) no-repeat 0 0; cursor:pointer; }
 #bin .thumb .delete:hover { background-position:0 -12px; }
 #bin .thumb li { clear:both; }
 
-.thumb { border:1px solid #666; overflow:hidden; width:100px; height:60px; position:relative; background:#000 url(/static/img/stripes.png) repeat 0 0; }
+.thumb { border:1px solid #666; overflow:hidden; width:100px; height:60px; position:relative; background:#000 url(../img/stripes.png) repeat 0 0; }
 .thumb:hover { border-color:#D8DDE6; }
 .thumb img { /*width:100%; */position:absolute; top:0; left:0; }
 
@@ -61,9 +61,9 @@
 #toolbar .button:last-child { margin:0; }
 #toolbar .button:hover { background: #ccc; }
 .thumb .icon { position: absolute; width:100%; height:100%; }
-.thumb .icon.loader { background:url(/static/img/loader.gif) no-repeat center; opacity:0.6; }
-.thumb .icon.delete { background:url(/static/img/delete.png) no-repeat center; opacity:0.6; }
-.thumb .icon.reload { background:url(/static/img/reload.png) no-repeat center; opacity:0.8; display:none; }
+.thumb .icon.loader { background:url(../img/loader.gif) no-repeat center; opacity:0.6; }
+.thumb .icon.delete { background:url(../img/delete.png) no-repeat center; opacity:0.6; }
+.thumb .icon.reload { background:url(../img/reload.png) no-repeat center; opacity:0.8; display:none; }
 
 #layer_palette { background:black; color: #ccc; float:left; min-width:200px; }
 #layer_palette .layer { position:static; border: 1px solid #999; padding:6px 10px; }
