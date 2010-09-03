@@ -34,11 +34,6 @@ data = {
         'name': 'Faustus Estate',
         'thumb': '_faustusestate.jpg',
         'src': '/static/img/faustusestate.jpg'
-    },
-    {
-        'name': 'Random',
-        'thumb': '',
-        'src': 'http://ns2lerk.com/images/EnvConceptLarge.jpg'
     }],
     'charImg': [
     {
@@ -81,7 +76,7 @@ data['slideshow'] = [{
                         {
                             'name':  'bgImg',
                             'depth': 0,
-                            'data':  data['bgImg'][3]
+                            'data':  data['bgImg'][2]
                         },
                         {
                             'name': 'charImg',
@@ -89,6 +84,7 @@ data['slideshow'] = [{
                             'delay': 1000,
                             'data': data['charImg'][0],
                             'animated': True,
+                            'resize': True,
                             'side': 'left',
                             'speed': 1000,
                             'text': "Hey, I'm a registered trademark of Sega Corp! I can't appear in this flick."
@@ -109,6 +105,7 @@ data['slideshow'] = [{
                             'data':  data['charImg'][2],
                             'side':  'left',
                             'animated': True,
+                            'resize': True,
                             'delay': 500,
                             'speed': 1000,
                             'text': "Wow, this guy needs to clean his desk. What a mess!"
@@ -128,6 +125,7 @@ data['slideshow'] = [{
                             'name':  'charImg',
                             'depth': 2,
                             'data':  data['charImg'][2],
+                            'resize': True,
                             'side':  'left',
                         },
                         {
@@ -136,6 +134,7 @@ data['slideshow'] = [{
                             'data':  data['charImg'][3],
                             'side':  'right',
                             'animated': True,
+                            'resize': True,
                             'delay': 1500,
                             'speed': 300,
                             'text': "Is it lunch time yet?",
@@ -149,7 +148,7 @@ data['slideshow'] = [{
                         {
                             'name':  'bgImg',
                             'depth': 0,
-                            'data':  data['bgImg'][3]
+                            'data':  data['bgImg'][2]
                         },
                         {
                             'name':  'charImg',
@@ -157,6 +156,7 @@ data['slideshow'] = [{
                             'data':  data['charImg'][7],
                             'side':  'left',
                             'animated': True,
+                            'resize': True,
                             'speed': 500,
                             'text': "Hey Tails, great news. I got a house!"
                         }
@@ -168,13 +168,14 @@ data['slideshow'] = [{
                         {
                             'name':  'bgImg',
                             'depth': 0,
-                            'data':  data['bgImg'][3]
+                            'data':  data['bgImg'][2]
                         },
                         {
                             'name':  'charImg2',
                             'depth': 1,
                             'data':  data['charImg'][7],
                             'side':  'left',
+                            'resize': True,
                         },
                         {
                             'name':  'charImg',
@@ -182,6 +183,7 @@ data['slideshow'] = [{
                             'data':  data['charImg'][1],
                             'side':  'right',
                             'animated': True,
+                            'resize': True,
                             'delay': 500,
                             'speed': 1500,
                             'text': "Uh, yeah, that's super. But I won't help you move."

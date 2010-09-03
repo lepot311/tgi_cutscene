@@ -102,6 +102,7 @@ D.defaults = {
   },
   container:        '#disgaea',
   debug:            true,
+  dialogWrapperHeight:   180,
   direction:        undefined,
   form:             '#edit',
   imagePath:        '/static/img/',
@@ -265,7 +266,7 @@ D.Slide.renderLayers = function(){
     layer.data = this
     layer.slide = slide
     if (layer.data.animated){
-      layer.element = $div(false, 'layer').hide()
+      layer.element = $div().hide().addClass('layer')
     } else {
       layer.element = $div(false, 'layer')
     }
@@ -362,6 +363,9 @@ D.Layer.populate = function(){
         if (layer.imagesRemaining === 0) layer.ready()
     }))
   )
+  if (this.data.resize) {
+    $(this.element).find('img').height($(D.getViewer().element).height() + 80)
+  }
   if (D.util.get('debug')){
     var tooltip = $div(false, 'tooltip').text(layer.data.name),
         offset = 10
@@ -556,10 +560,12 @@ D.Dialog.clear = function(){
   $(this.message).text('')
 }
 D.Dialog.popIn = function(){
+  this.wrapperHeight = D.util.get('dialogWrapperHeight')
   $(this.wrapper)
-    .css('bottom', -180)
+    .height(this.wrapperHeight)
+    .css('bottom', -this.wrapperHeight)
     .animate({
-      bottom: -50
+      bottom: -(this.wrapperHeight / 3.6)
     }, 1400, 'easeOutElastic', function(){
       console.log('done')
     })
@@ -569,7 +575,11 @@ D.Dialog.popIn = function(){
 //////////////////////////// Helper functions
 D.util.get = function(key){
   // Get variable or default
-  return D.options ? D.options[key] : D.defaults[key]
+  if (D.options) {
+    return D.options[key] ? D.options[key] : D.defaults[key]
+  } else {
+    return D.defaults[key]
+  }
 }
 // D.util.processImagePaths = function(layer){
 //   console.log('process:', layer)
@@ -612,16 +622,14 @@ D.util.loadSlideshow = function(){
     D.util.jsonSlideshow()
   } else {
     D.setCurrentSlideshow(slideshow)
+    // render slideshow assets
+    D.util.renderSlideshow()
   }
-  // render slideshow assets
-  D.util.renderSlideshow()
-  console.log('slideshow loaded')
-  D.getViewer().renderTransport()
   // D.getViewer().play()
 }
 D.util.renderSlideshow = function(){
   // Iterate over all slides
-  $.each(D.currentSlideshow, function(){
+  $.each(D.getCurrentSlideshow(), function(){
     // Create layers from slides
     $.each(this.layers, function(index){
       // D.util.processImagePaths(this)
@@ -633,12 +641,16 @@ D.util.renderSlideshow = function(){
   // Create palettes
   D.util.loadPalettes()
   D.getCurrentBin()[0].activate()
+  console.log('slideshow loaded')
+  D.getViewer().renderTransport()
 }
 D.util.jsonSlideshow = function(f){
   // Gets an array of slides
   $.getJSON(D.util.get('jsonPath') + 'slideshow', function(data){
     // console.log(data)
     D.setCurrentSlideshow(data)
+    // render slideshow assets
+    D.util.renderSlideshow()
   })
 }
 D.util.loadPalettes = function(layer){
@@ -708,9 +720,11 @@ D.init = function(options){
   // D.getViewer().seek()
 }
 ////////////////////////////
-D.init({
-  assets: FF.assets,
-  slideshow: FF.slideshow,
-  container: '.promo_slider .content'
-  })
+// D.init({
+//   assets: FF.assets,
+//   slideshow: FF.slideshow,
+//   container: '.promo_slider .content'
+//   })
+D.init({resize: true})
 });
+
