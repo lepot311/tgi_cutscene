@@ -404,6 +404,8 @@ D.Layer.animate = function(){
   var layer = this
   var params = {}
   params[this.side] = 0
+  // start off of the slide
+  $(this.element).css(this.side, -this.width)
   $(this.element)
     .delay(this.data.delay || 0)
     .show()
@@ -730,7 +732,8 @@ D.init({
   assets: FF.assets,
   slideshow: FF.slideshow,
   container: '.promo_slider .content',
-  dialogWrapperHeight: 130
+  dialogWrapperHeight: 100,
+  textColor: '#ccc'
   })
 });
 

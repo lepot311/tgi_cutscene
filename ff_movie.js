@@ -5,16 +5,16 @@ var themePath = '/sites/all/themes/faxion/',
 FF = {}
 FF.assets = [
   {
-    name: 'Faxion News Studio A',
-    src: imagePath + 'fax_news_bg1.jpg'
+    name: 'Faxion News Studio B',
+    src: imagePath + 'fax_news_bg2.jpg'
   },
   {
-    name: 'Sonic',
-    src: jsImgPath + 'sonic.png'
+    name: 'hell',
+    src: imagePath + 'chars/hell_male.png'
   },
   {
-    name: 'Amy',
-    src: jsImgPath + 'amy.png'
+    name: 'heaven',
+    src: imagePath + 'chars/heaven_fem.png'
   },
 ]
 
@@ -27,17 +27,19 @@ FF.slideshow = [
         data: FF.assets[0]
       },
       {
-        name: 'Sonic',
+        name: 'hell',
         data: FF.assets[1],
-        resize: true,
-        side: 'left'
+        side: 'left',
+        animated: true,
+        speed: 1000
       },
       {
-        name: 'Amy',
+        name: 'heaven',
         data: FF.assets[2],
-        resize: true,
         side: 'right',
-        text: "Hello and welcome to Faxion News at 8. I'm Amy the Cat."
+        animated: true,
+        speed: 1000,
+        text: "Hello and welcome to Faxion News at 8."
       }
     ]
   },
@@ -50,16 +52,14 @@ FF.slideshow = [
         data: FF.assets[0]
       },
       {
-        name: 'Sonic',
+        name: 'hell',
         data: FF.assets[1],
-        resize: true,
         side: 'left',
-        text: "And I'm Sonic the Hedgehog, reporting live from the Netherworld."
+        text: "We're reporting live from the Netherworld."
       },
       {
-        name: 'Amy',
+        name: 'heaven',
         data: FF.assets[2],
-        resize: true,
         side: 'right'
       }
     ]
@@ -73,20 +73,38 @@ FF.slideshow = [
         data: FF.assets[0]
       },
       {
-        name: 'Sonic',
+        name: 'hell',
         data: FF.assets[1],
-        resize: true,
         side: 'left',
-        text: "Tonight's Big Story: Fiber. Are you getting enough? Results of a new study may surprise you."
+        text: "Tonight's Big Story: Fiber. Are you getting enough?"
       },
       {
-        name: 'Amy',
+        name: 'heaven',
         data: FF.assets[2],
-        resize: true,
         side: 'right'
+      }
+    ]
+  },
+  
+  {
+    name: 'B',
+    layers: [
+      {
+        name: 'Newsroom A',
+        data: FF.assets[0]
+      },
+      {
+        name: 'hell',
+        data: FF.assets[1],
+        side: 'left',
+      },
+      {
+        name: 'heaven',
+        data: FF.assets[2],
+        side: 'right',
+        text: "A new study may surprise you."
       }
     ]
   },
 ]
 
-console.log('FF', FF)
