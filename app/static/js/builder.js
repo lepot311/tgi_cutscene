@@ -154,13 +154,20 @@ D.Viewer.loadCurrentSlide = function(f){
   // console.log('loading current slide assets -> viewer')
   var viewer = this,
       slide = clone(D.Slide)
-  if (this.dialog) this.dialog.clear()
+  // console.log('dialog clear')
+  // if (this.dialog) this.dialog.clear()
   slide.data = D.getCurrentSlide()
   slide.element = $div(false, 'slide')
   slide.queue = []
   slide.init()
   viewer.slide = slide
   $(this.element).append(slide.element)
+  
+  // if (this.slide.data.transition && this.slide.data.transition.In) {
+  //   if (this.slide.data.transition.In.pre) $(this.slide.element).css(this.slide.data.transition.In.pre)
+  //   $(this.slide.element).animate(this.slide.data.transition.In.effect, this.slide.data.transition.In.speed)
+  // }
+  
   this.updateLog()
   if (f) f()
 }
@@ -188,9 +195,8 @@ D.Viewer.seek = function(delta){
     D.setCurrentSlide(target)
     this.loadCurrentSlide()
   } else {
-    if (D.getViewer().loop){
+    if (this.loop){
       // Seek to beginning
-      // console.log('loop')
       D.setCurrentSlide(D.getCurrentSlideshow()[0])
       this.loadCurrentSlide()
     } else {
@@ -199,8 +205,18 @@ D.Viewer.seek = function(delta){
   }
 }
 D.Viewer.slideFinished = function(){
+  var viewer = this
   if (this.isPlaying === true){
-    this.seek()
+    // clear the dialog window
+    if (this.dialog) this.dialog.clear()
+    // check for transition on slide and pass as object to jQuery.animate()
+    if (this.slide.data.transition && this.slide.data.transition.Out) {
+      $(this.slide.element).animate(this.slide.data.transition.Out.effect, this.slide.data.transition.Out.speed, function(){
+        viewer.seek()
+      })
+    } else {
+      this.seek()
+    }
   }
 }
 D.Viewer.renderTransport = function(){
@@ -222,6 +238,7 @@ D.Viewer.renderDialog = function(layer){
   if (layer){
     if (!this.dialog){
       var dialog = clone(D.Dialog)
+      dialog.slide = this.slide
       dialog.init()
       // console.log('creating dialog ->', dialog.wrapper)
       $(this.element).append(dialog.wrapper)
@@ -235,17 +252,21 @@ D.Viewer.renderDialog = function(layer){
     this.dialog.buildIn()
   }
 }
-D.Viewer.init = function(){
+D.Viewer.destroyDialog = function(){
+  delete(this.dialog)
+}
+
+// D.Viewer.init = function(){
   // console.log('Initializing Viewer')
   // Create console if needed
-  var viewer = this
+  // var viewer = this
   // if (D.util.get('debug') === true){
   //   if ($(viewer.element).find('.info').length === 0){
   //     console.log('Viewer debug console ENABLED')
   //     $(viewer.element).append($div(false, 'info'))
   //   }
   // }
-}
+// }
 
   // LayerPalette: function()
   // {
@@ -279,7 +300,11 @@ D.Slide.renderLayers = function(){
 }
 D.Slide.hasFinished = function(){
   // Signal the viewer
-  D.getViewer().slideFinished()
+  // console.log('slide finished')
+  var slide = this
+  this.timer = setTimeout(function(){
+    slide.viewer.slideFinished()
+  }, D.getCurrentSlide().timeout || D.util.get('timeout'))
 }
 D.Slide.ready = function(){
   // console.log('slide said ready')
@@ -327,6 +352,7 @@ D.Slide.ready = function(){
 //   console.log('*****', markers)
 // }
 D.Slide.animate = function(){
+  var slide = this
   if (this.queue.length > 0){
     var target = this.queue.shift()
     // console.log('-- animate ->', target)
@@ -336,14 +362,19 @@ D.Slide.animate = function(){
     $.each(this.data.layers, function(){
       // console.log('+', this)
       if (this.text){
+        slide.hasDialog = true
         // D.getViewer().dialog.moveArrow()
-        D.getViewer().renderDialog(this)
+        slide.viewer.renderDialog(this)
       }
     })
-    // D.getViewer().slideFinished()
+    if (!slide.hasDialog) {
+      if (slide.viewer.dialog) slide.viewer.dialog.dropOut()
+      slide.hasFinished()
+    }
   }
 }
 D.Slide.init = function(){
+  this.viewer = D.getViewer()
   // console.log('new slide', this)
   this.layersRemaining = 0
   this.renderLayers()
@@ -481,9 +512,11 @@ D.BinThumb.activate = function(){
   this.makeActive()
   // Add loader icon
   $(this.element).append($div(false, 'icon loader'))
-  D.getViewer().loadCurrentSlide(function(){
-    $(thumb.element).find('.loader').remove()
-  })
+
+  //// load slide on bin click
+  // D.getViewer().loadCurrentSlide(function(){
+  //   $(thumb.element).find('.loader').remove()
+  // })
 }
 D.BinThumb.makeActive = function(){
   $(D.util.get('bin')).find('.thumb.active').removeClass('active')
@@ -534,21 +567,26 @@ D.Dialog.buildIn = function(){
     .animate({
       'top': -30,
       'opacity': 1
-    }, 100)
+    }, 100, function(){
+      // console.log('arrow in')
+    })
   this.timer = setInterval(function(){
     D.getViewer().dialog.appendLetter()
   }, 30)
 }
+D.Dialog.finished = function(){
+  // wait for slide timeout then advance
+  this.slide.hasFinished()
+}
 D.Dialog.appendLetter = function(){
+  var dialog = this
   // console.log('append letter.....')
   if (this.count < this.layer.text.length){
     $(this.message).text($(this.message).text() + this.layer.text[this.count])
     this.count++
   } else {
     clearInterval(this.timer)
-    this.timer = setTimeout(function(){
-      D.getViewer().slideFinished()
-    }, D.getCurrentSlide().timeout || D.util.get('timeout'))
+    dialog.finished()
   }
 }
 D.Dialog.clear = function(){
@@ -556,11 +594,16 @@ D.Dialog.clear = function(){
   $(this.arrow).animate({
     'top': -15,
     'opacity':0
-    }, 100)
+    }, 100, function(){
+      // console.log('arrow out')
+    })
   clearInterval(this.timer)
   clearTimeout(this.timer)
   this.count = 0
   $(this.message).text('')
+}
+D.Dialog.destroy = function(){
+  D.getViewer().destroyDialog()
 }
 D.Dialog.popIn = function(){
   this.wrapperHeight = D.util.get('dialogWrapperHeight')
@@ -573,6 +616,15 @@ D.Dialog.popIn = function(){
       // console.log('done')
     })
   this.visible = true
+}
+D.Dialog.dropOut = function(){
+  var dialog = this
+  $(this.wrapper)
+    .animate({
+      bottom: -this.wrapperHeight
+    }, function(){
+      dialog.destroy()
+    })
 }
 
 //////////////////////////// Helper functions
@@ -703,7 +755,7 @@ D.init = function(options){
     // D.layerPalette = new D.LayerPalette()
   // Insert elements
   var viewer = clone(D.Viewer)
-  viewer.init()
+  // viewer.init()
   viewer.loop = true
   D.setViewer(viewer)
   $(D.util.get('container'))

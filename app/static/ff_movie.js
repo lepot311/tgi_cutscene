@@ -25,9 +25,27 @@ FF.assets = [
   },
 ]
 
+FF.transitions = {
+  fadeIn: {
+    opacity: 1
+  },
+  fadeOut: {
+    opacity: 0
+  }
+}
+
 FF.slideshow = [
   {
     name: 'Intro',
+    transition: {
+      In: {
+        effect: FF.transitions.fadeIn,
+        speed: 1000,
+        pre: {
+          opacity: 0
+        }
+      }
+    },
     layers: [
       {
         name: 'Newsroom A',
@@ -38,8 +56,8 @@ FF.slideshow = [
         data: FF.assets[2],
         side: 'right',
         animated: true,
-        speed: 1000,
-        text: "Hello and welcome to Faxion News at "+localTime()+"."
+        speed: 1000
+        // text: "Hello and welcome to Faxion News at "+localTime()+"."
       }
     ]
   },
@@ -57,7 +75,7 @@ FF.slideshow = [
         side: 'left',
         animated: true,
         speed: 1000,
-        text: "We're reporting live from the Netherworld."
+        text: "............."
       },
       {
         name: 'heaven',
@@ -77,34 +95,39 @@ FF.slideshow = [
       {
         name: 'hell',
         data: FF.assets[1],
-        side: 'left',
-        text: "Tonight's Big Story: Fiber. Are you getting enough?"
-      },
-      {
-        name: 'heaven',
-        data: FF.assets[2],
-        side: 'right'
-      }
-    ]
-  },
-  
-  {
-    name: 'B',
-    layers: [
-      {
-        name: 'Newsroom A',
-        data: FF.assets[0]
-      },
-      {
-        name: 'hell',
-        data: FF.assets[1],
-        side: 'left',
+        side: 'left'
       },
       {
         name: 'heaven',
         data: FF.assets[2],
         side: 'right',
-        text: "A new study may surprise you."
+        text: "I forgot my line."
+      }
+    ]
+  },
+  
+  {
+    name: 'C',
+    transition: {
+      Out: {
+        effect: FF.transitions.fadeOut,
+        speed: 1000
+      }
+    },
+    layers: [
+      {
+        name: 'Newsroom A',
+        data: FF.assets[0]
+      },
+      {
+        name: 'hell',
+        data: FF.assets[1],
+        side: 'left'
+      },
+      {
+        name: 'heaven',
+        data: FF.assets[2],
+        side: 'right'
       }
     ]
   },
