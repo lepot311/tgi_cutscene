@@ -105,15 +105,15 @@ D.defaults = {
   dialogWrapperHeight:   180,
   direction:        undefined,
   form:             '#edit',
-  imagePath:        '/static/img/',
+  imagePath:        '../img/',
   jsonPath:         '/json/',
   palette:          '#palette',
-  slideDir:         '/static/img/',
+  slideDir:         '../img/',
   slideshow:        undefined,
   textColor:        '#46372A',
   textLength:       0,
   textSpeed:        30,
-  thumbDir:         '/static/img/',
+  thumbDir:         '../img/',
   timeout:          1600,
   toolbar:          '#toolbar',
   transitionSpeed:  300,
@@ -729,7 +729,7 @@ D.init = function(options){
 D.init({
   assets: FF.assets,
   slideshow: FF.slideshow,
-  container: '.promo_slider .content',
+  container: '#disgaea',
   dialogWrapperHeight: 130
   })
 });
