@@ -354,12 +354,16 @@ D.Layer.populate = function(){
   var layer = this
   this.imagesRemaining++
   // console.log('images remaining?', layer.imagesRemaining)
+  layer.side = layer.data.side || 'left'
   $(this.slide.element)
     .append($(this.element)
+      // move layer to correct side
+      .css(layer.side, 0)
       .append($img(layer.data.data.src, layer.data.side, function(){
-        layer.width = this.width
+        if (layer.data.animated) $(layer.element).css(layer.side, -this.width)
+        // signal slide object
         layer.imagesRemaining--
-        // console.log('loaded image. remaining:', layer.imagesRemaining)
+          // console.log('loaded image. remaining:', layer.imagesRemaining)
         if (layer.imagesRemaining === 0) layer.ready()
     }))
   )
@@ -367,10 +371,6 @@ D.Layer.populate = function(){
   if (this.data.resize) {
     $(this.element).find('img').height($(D.getViewer().element).height() + 80)
   }
-  // move layer to correct side
-  this.side = this.data.side || 'left'
-  $(this.element).css(this.side, -$(this.element).width())
-
   // if (D.util.get('debug')){
     // var tooltip = $div(false, 'tooltip').text(layer.data.name),
         // offset = 10
