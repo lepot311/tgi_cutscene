@@ -160,13 +160,15 @@ D.Viewer.loadCurrentSlide = function(f){
   slide.element = $div(false, 'slide')
   slide.queue = []
   slide.init()
-  viewer.slide = slide
+  this.slide = slide
   $(this.element).append(slide.element)
-  
-  // if (this.slide.data.transition && this.slide.data.transition.In) {
-  //   if (this.slide.data.transition.In.pre) $(this.slide.element).css(this.slide.data.transition.In.pre)
-  //   $(this.slide.element).animate(this.slide.data.transition.In.effect, this.slide.data.transition.In.speed)
-  // }
+  // console.log(slide.data.name)
+  if (slide.data.transition && slide.data.transition.In) {
+    // fulfill prerequisite conditions
+    if (slide.data.transition.In.pre) $(slide.element).css(slide.data.transition.In.pre)
+  // } else {
+  //   slide.animate()
+  }
   
   this.updateLog()
   if (f) f()
@@ -186,7 +188,8 @@ D.Viewer.pause = function(){
 D.Viewer.seek = function(delta){
   // console.log('seeking by', delta || 1)
   // Set the current slide to be the current slide plus the delta
-  var current = D.getCurrentSlideshow().indexOf(D.getCurrentSlide()),
+  var viewer = this,
+      current = D.getCurrentSlideshow().indexOf(D.getCurrentSlide()),
       next = current + (delta || 1)
       target = D.getCurrentSlideshow()[next]
   // console.log('delta', delta, 'current', current, 'next', next)
@@ -196,13 +199,19 @@ D.Viewer.seek = function(delta){
     this.loadCurrentSlide()
   } else {
     if (this.loop){
-      // Seek to beginning
-      D.setCurrentSlide(D.getCurrentSlideshow()[0])
-      this.loadCurrentSlide()
+      if (this.dialog) this.dialog.dropOut(function(){
+        viewer.reset()
+      })
     } else {
       this.pause()
     }
   }
+}
+D.Viewer.reset = function(){
+  console.log('reset')
+  // Seek to beginning
+  D.setCurrentSlide(D.getCurrentSlideshow()[0])
+  this.loadCurrentSlide()
 }
 D.Viewer.slideFinished = function(){
   var viewer = this
@@ -309,8 +318,9 @@ D.Slide.hasFinished = function(){
 D.Slide.ready = function(){
   // console.log('slide said ready')
   this.isReady = true
+  this.transition()
   // this.addMarkers()
-  this.animate()
+  // this.animate()
 }
 // D.Slide.addMarkers = function(m){
 //   $(D.getViewer().transport).find('#markers').remove()
@@ -351,6 +361,19 @@ D.Slide.ready = function(){
 //   $(D.getViewer().transport).append(element)
 //   console.log('*****', markers)
 // }
+D.Slide.transition = function(){
+  var slide = this
+  if (this.data.transition && this.data.transition.In){
+    // animate transition
+    $(this.element)
+      .animate(this.data.transition.In.effect, this.data.transition.In.speed, function(){
+        // console.log('t-in complete')
+        slide.animate()
+    })
+  } else {
+    slide.animate()
+  }
+}
 D.Slide.animate = function(){
   var slide = this
   if (this.queue.length > 0){
@@ -391,6 +414,7 @@ D.Layer.populate = function(){
       // move layer to correct side
       .css(layer.side, 0)
       .append($img(layer.data.data.src, layer.data.side, function(){
+        // move animated layers off screen
         if (layer.data.animated) $(layer.element).css(layer.side, -this.width)
         // signal slide object
         layer.imagesRemaining--
@@ -617,13 +641,14 @@ D.Dialog.popIn = function(){
     })
   this.visible = true
 }
-D.Dialog.dropOut = function(){
+D.Dialog.dropOut = function(f){
   var dialog = this
   $(this.wrapper)
     .animate({
       bottom: -this.wrapperHeight
     }, function(){
       dialog.destroy()
+      if (f) f()
     })
 }
 

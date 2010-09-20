@@ -108,12 +108,6 @@ FF.slideshow = [
   
   {
     name: 'C',
-    transition: {
-      Out: {
-        effect: FF.transitions.fadeOut,
-        speed: 1000
-      }
-    },
     layers: [
       {
         name: 'Newsroom A',
@@ -131,5 +125,32 @@ FF.slideshow = [
       }
     ]
   },
+  
+  {
+    name: 'D',
+    transition: {
+      Out: {
+        effect: FF.transitions.fadeOut,
+        speed: 1000
+      }
+    },
+    layers: [
+      {
+        name: 'Newsroom A',
+        data: FF.assets[0]
+      },
+      {
+        name: 'hell',
+        data: FF.assets[1],
+        side: 'left',
+        text: "OOPS!"
+      },
+      {
+        name: 'heaven',
+        data: FF.assets[2],
+        side: 'right'
+      }
+    ]
+  }
 ]
 
