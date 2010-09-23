@@ -22,6 +22,7 @@
 /*#viewer .layer.active { background: url(../img/stripes.png) repeat 0 0; }*/
 #viewer .layer .highlight { background:rgba(13,199,246,0.25); width:100%; height:100%; position:absolute; left:0; top:0; }
 #viewer .layer .tooltip { display:none; left:0; top:0; background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; z-index:99;}
+#viewer .layer.fill { width: 100%; height: 100%; }
 #viewer .slide { width:100%; height:100%; }
 #viewer .slide .layer { z-index:97; }
 #viewer:hover #transportWrapper { display:block; }

@@ -23,6 +23,13 @@ FF.assets = [
     name: 'heaven',
     src: imagePath + 'big.png'
   },
+  {
+    name: 'an overlay',
+    fill: {
+      opacity: 0.8,
+      color: '#333333'
+    }
+  }
 ]
 
 FF.transitions = {
@@ -57,7 +64,7 @@ FF.slideshow = [
         side: 'right',
         animated: true,
         speed: 1000
-        // text: "Hello and welcome to Faxion News at "+localTime()+"."
+        // dialog: "Hello and welcome to Faxion News at "+localTime()+"."
       }
     ]
   },
@@ -75,7 +82,9 @@ FF.slideshow = [
         side: 'left',
         animated: true,
         speed: 1000,
-        text: "............."
+        dialog: {
+          text: "............."
+        }
       },
       {
         name: 'heaven',
@@ -87,6 +96,7 @@ FF.slideshow = [
   
   {
     name: 'B',
+    timeout: 4000,
     layers: [
       {
         name: 'Newsroom A',
@@ -101,7 +111,38 @@ FF.slideshow = [
         name: 'heaven',
         data: FF.assets[2],
         side: 'right',
-        text: "I forgot my line."
+        dialog: {
+          text: "I forgot my line."
+        }
+      }
+    ]
+  },
+  
+  {
+    name: 'Background test',
+    timeout: 4000,
+    layers: [
+      {
+        name: 'Newsroom A',
+        data: FF.assets[0]
+      },
+      {
+        name: 'heaven',
+        data: FF.assets[2],
+        side: 'right'
+      },
+      {
+        name: 'overlay',
+        data: FF.assets[3]
+      },
+      {
+        name: 'hell',
+        data: FF.assets[1],
+        side: 'left',
+        dialog: {
+          style: 'cinematic',
+          text: 'When he said that, I knew something had to be amiss.. He NEVER forgets his lines.'
+        }
       }
     ]
   },
@@ -143,7 +184,9 @@ FF.slideshow = [
         name: 'hell',
         data: FF.assets[1],
         side: 'left',
-        text: "OOPS!"
+        dialog: {
+          text: "OOPS!"
+        }
       },
       {
         name: 'heaven',

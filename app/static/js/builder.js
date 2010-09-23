@@ -60,6 +60,7 @@ var D = (function(){
   function _push(array, value){
     array.push(value)
   }
+  // public methods
   return {
     util: {},
     setCurrentSlide: function(slide){
@@ -198,17 +199,16 @@ D.Viewer.seek = function(delta){
     D.setCurrentSlide(target)
     this.loadCurrentSlide()
   } else {
-    if (this.loop){
-      if (this.dialog) this.dialog.dropOut(function(){
+    if (this.dialog) this.dialog.dropOut(function(){
+      if (viewer.loop){
         viewer.reset()
-      })
-    } else {
-      this.pause()
-    }
+      } else {
+        viewer.pause()
+      }
+    })
   }
 }
 D.Viewer.reset = function(){
-  console.log('reset')
   // Seek to beginning
   D.setCurrentSlide(D.getCurrentSlideshow()[0])
   this.loadCurrentSlide()
@@ -242,15 +242,22 @@ D.Viewer.renderTransport = function(){
   this.transport = transport
 }
 D.Viewer.renderDialog = function(layer){
-  // console.log('renderDialog received', layer)
-  // Update text)
-  if (layer){
+  console.log('renderDialog received', layer)
+  // Update text
+  if (layer && layer.dialog){
     if (!this.dialog){
       var dialog = clone(D.Dialog)
       dialog.slide = this.slide
       dialog.init()
-      // console.log('creating dialog ->', dialog.wrapper)
+      console.log('creating dialog ->', dialog.wrapper, layer.dialog.style)
+      this.dialogStyle = layer.dialog.style
+      if (layer.dialog.style){
+        console.log('dialog style:', layer.dialog.style)
+        $(dialog.wrapper).addClass(layer.dialog.style)
+      }
+      
       $(this.element).append(dialog.wrapper)
+      
       dialog.popIn()
       this.dialog = dialog
     }
@@ -309,14 +316,14 @@ D.Slide.renderLayers = function(){
 }
 D.Slide.hasFinished = function(){
   // Signal the viewer
-  // console.log('slide finished')
+  console.log('slide finished')
   var slide = this
   this.timer = setTimeout(function(){
     slide.viewer.slideFinished()
   }, D.getCurrentSlide().timeout || D.util.get('timeout'))
 }
 D.Slide.ready = function(){
-  // console.log('slide said ready')
+  console.log('slide said ready')
   this.isReady = true
   this.transition()
   // this.addMarkers()
@@ -375,21 +382,28 @@ D.Slide.transition = function(){
   }
 }
 D.Slide.animate = function(){
+  this.viewer = D.getViewer()
   var slide = this
   if (this.queue.length > 0){
     var target = this.queue.shift()
-    // console.log('-- animate ->', target)
+    console.log('-- animate ->', target)
     target.slide.animate()
   } else {
     // console.log('slide finished all animations')
     $.each(this.data.layers, function(){
       // console.log('+', this)
-      if (this.text){
+      var layer = this
+      if (this.dialog){
         slide.hasDialog = true
-        // D.getViewer().dialog.moveArrow()
-        slide.viewer.renderDialog(this)
+        if (slide.viewer.dialog && this.dialog.style != slide.viewer.dialogStyle){
+          slide.viewer.dialog.dropOut(function(){ slide.viewer.renderDialog(layer) })
+        } else {
+          slide.viewer.renderDialog(layer)
+        }
+        
       }
     })
+    
     if (!slide.hasDialog) {
       if (slide.viewer.dialog) slide.viewer.dialog.dropOut()
       slide.hasFinished()
@@ -398,7 +412,7 @@ D.Slide.animate = function(){
 }
 D.Slide.init = function(){
   this.viewer = D.getViewer()
-  // console.log('new slide', this)
+  console.log('new slide (', this.data.name, ')')
   this.layersRemaining = 0
   this.renderLayers()
 }
@@ -409,8 +423,12 @@ D.Layer.populate = function(){
   this.imagesRemaining++
   // console.log('images remaining?', layer.imagesRemaining)
   layer.side = layer.data.side || 'left'
-  $(this.slide.element)
-    .append($(this.element)
+
+  // "image" layers
+  // an image layer downloads some source image file to use as its data
+  if (this.data.data.src){
+    console.log('+ img layer', this.data.data.src)
+    $(layer.element)
       // move layer to correct side
       .css(layer.side, 0)
       .append($img(layer.data.data.src, layer.data.side, function(){
@@ -421,7 +439,22 @@ D.Layer.populate = function(){
           // console.log('loaded image. remaining:', layer.imagesRemaining)
         if (layer.imagesRemaining === 0) layer.ready()
     }))
-  )
+  }
+  
+  // "fill" layers
+  // a fill layer is defined only by its fill color and opacity
+  if (this.data.data.fill){
+    console.log('+ fill layer')
+    $(layer.element)
+      .addClass('fill')
+      .css('opacity', layer.data.data.fill.opacity || 1)
+      .css('background-color', layer.data.data.fill.color || '#000000')
+    layer.ready()
+  }
+
+  // add the layer to the slide
+  $(this.slide.element).append($(this.element))
+  
   // auto-resizing per layer
   if (this.data.resize) {
     $(this.element).find('img').height($(D.getViewer().element).height() + 80)
@@ -605,8 +638,8 @@ D.Dialog.finished = function(){
 D.Dialog.appendLetter = function(){
   var dialog = this
   // console.log('append letter.....')
-  if (this.count < this.layer.text.length){
-    $(this.message).text($(this.message).text() + this.layer.text[this.count])
+  if (this.count < this.layer.dialog.text.length){
+    $(this.message).text($(this.message).text() + this.layer.dialog.text[this.count])
     this.count++
   } else {
     clearInterval(this.timer)
@@ -716,12 +749,15 @@ D.util.renderSlideshow = function(){
       D.addLayer(this.name, this)
     })
     // Create bin thumbnail
-    D.util.loadSlide(this)
+    // D.util.loadSlide(this)
   })
   // Create palettes
-  D.util.loadPalettes()
-  D.getCurrentBin()[0].activate()
+  // D.util.loadPalettes()
+  // D.getCurrentBin()[0].activate()
   // console.log('slideshow loaded')
+  
+  // start from first slide
+  D.setCurrentSlide(D.getCurrentSlideshow()[0])
   if (D.options['editor']) D.getViewer().renderTransport()
 }
 D.util.jsonSlideshow = function(f){
