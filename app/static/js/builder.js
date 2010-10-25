@@ -843,6 +843,7 @@ D.init({
   assets: FF.assets,
   slideshow: FF.slideshow,
   container: '#disgaea',
+  loop: true,
   dialogWrapperHeight: 130
   })
 });

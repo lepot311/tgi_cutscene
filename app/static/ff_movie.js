@@ -1,4 +1,6 @@
-var imagePath = 'img/'
+var themePath = '/sites/all/themes/faxion/',
+    imagePath = themePath + 'images/',
+    jsImgPath = themePath + 'js/tgi_cutscene/img/'
 
 function localTime(){
   var d = new Date(),
@@ -13,23 +15,16 @@ FF = {}
 FF.assets = [
   {
     name: 'Faxion News Studio B',
-    src: imagePath + 'trogkenswamps.jpg'
+    src: imagePath + 'fax_news_bg2.jpg'
   },
   {
     name: 'hell',
-    src: imagePath + 'knuckles.png'
+    src: imagePath + 'chars/hell_male.png'
   },
   {
     name: 'heaven',
-    src: imagePath + 'big.png'
+    src: imagePath + 'chars/heaven_fem.png'
   },
-  {
-    name: 'an overlay',
-    fill: {
-      opacity: 0.8,
-      color: '#333333'
-    }
-  }
 ]
 
 FF.transitions = {
@@ -63,8 +58,10 @@ FF.slideshow = [
         data: FF.assets[2],
         side: 'right',
         animated: true,
-        speed: 1000
-        // dialog: "Hello and welcome to Faxion News at "+localTime()+"."
+        speed: 1000,
+        dialog: {
+          text: "Hello and welcome to Faxion News at "+localTime()+"."
+        }
       }
     ]
   },
@@ -83,7 +80,7 @@ FF.slideshow = [
         animated: true,
         speed: 1000,
         dialog: {
-          text: "............."
+          text: "We're reporting live from the Netherworld."
         }
       },
       {
@@ -96,68 +93,18 @@ FF.slideshow = [
   
   {
     name: 'B',
-    timeout: 4000,
     layers: [
       {
         name: 'Newsroom A',
         data: FF.assets[0]
-      },
-      {
-        name: 'hell',
-        data: FF.assets[1],
-        side: 'left'
-      },
-      {
-        name: 'heaven',
-        data: FF.assets[2],
-        side: 'right',
-        dialog: {
-          text: "I forgot my line."
-        }
-      }
-    ]
-  },
-  
-  {
-    name: 'Background test',
-    timeout: 4000,
-    layers: [
-      {
-        name: 'Newsroom A',
-        data: FF.assets[0]
-      },
-      {
-        name: 'heaven',
-        data: FF.assets[2],
-        side: 'right'
-      },
-      {
-        name: 'overlay',
-        data: FF.assets[3]
       },
       {
         name: 'hell',
         data: FF.assets[1],
         side: 'left',
         dialog: {
-          style: 'cinematic',
-          text: 'When he said that, I knew something had to be amiss.. He NEVER forgets his lines.'
+          text: "Tonight's Big Story: Fiber. Are you getting enough?"
         }
-      }
-    ]
-  },
-  
-  {
-    name: 'C',
-    layers: [
-      {
-        name: 'Newsroom A',
-        data: FF.assets[0]
-      },
-      {
-        name: 'hell',
-        data: FF.assets[1],
-        side: 'left'
       },
       {
         name: 'heaven',
@@ -168,7 +115,7 @@ FF.slideshow = [
   },
   
   {
-    name: 'D',
+    name: 'B',
     transition: {
       Out: {
         effect: FF.transitions.fadeOut,
@@ -184,16 +131,16 @@ FF.slideshow = [
         name: 'hell',
         data: FF.assets[1],
         side: 'left',
-        dialog: {
-          text: "OOPS!"
-        }
       },
       {
         name: 'heaven',
         data: FF.assets[2],
-        side: 'right'
+        side: 'right',
+        dialog: {
+          text: "A new study may surprise you."
+        }
       }
     ]
-  }
+  },
 ]
 
