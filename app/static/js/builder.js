@@ -605,6 +605,7 @@ D.Dialog = {
   arrow: $div(false, 'arrow'),
   visible: false,
   wrapSpeed: 400,
+  wrapWord: /\s\w*$/, // match last word in line
   startingPos: 15
 }
 
@@ -656,7 +657,7 @@ D.Dialog.appendLetter = function(){
   var dialog = this
   // console.log('append letter.....')
   if (this.count < this.layer.dialog.text.length){
-    console.log($(this.targetLine).width(), '/', $(this.message).width())
+    // console.log($(this.targetLine).width(), '/', $(this.message).width())
     if ($(this.targetLine).width() >= $(this.message).width()){
       this.lineWrap()
     }
@@ -671,23 +672,28 @@ D.Dialog.appendLetter = function(){
 D.Dialog.lineWrap = function(){
   var dialog = this
   this.timer.stop()
+  // match last word
+  var lineArray = this.targetLine.text().split(" ")
+  // remove last word from line
+  var lastWord = lineArray.pop()
+  this.targetLine.text(lineArray.join(" "))
+  // add line
+  this.nextLine = $div(false, 'line')
+  // copy last word to next line
+  this.nextLine.text(lastWord)
+  $(this.message).append(this.nextLine)
+  // activate the new line
+  this.prevLine = this.targetLine
+  this.targetLine = this.nextLine
+  this.timer.start()
   // animate last line up
-  this.targetLine.animate({
+  this.prevLine.animate({
     opacity: 0.5
   }, this.wrapSpeed)
   this.message.animate({
     top: '-='+this.targetLine.css('line-height').slice(0, -2) // drop the 'px'
-  }, this.wrapSpeed, function(){
-    // add line
-    dialog.targetLine = $div(false, 'line')
-    $(dialog.message).append(dialog.targetLine)
-    // copy last word to next line
-    dialog.timer.start()
-  })
-  console.log('dialog wrap')
-  // $(this.targetLine).animate({
-  //   top: -$(this.targetLine).css('line-height').slice(0, -2) // drop the 'px'
-  // }, 1000)
+  }, this.wrapSpeed)
+  // console.log('dialog wrap')
 }
 D.Dialog.clear = function(){
   console.log('--dialog: clear')
