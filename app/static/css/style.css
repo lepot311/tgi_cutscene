@@ -11,10 +11,12 @@
 #viewer form .wrong { color:red; font-weight:normal; padding:0.15em; }
 #viewer .layer { position:absolute; background-repeat:no-repeat; background-position:0 0; top:0; }
 /*.dialog { position:absolute; bottom:0; left:0; width:100%; height:180px; z-index:98; background:#E9E4D5 url(../img/d2.jpg) repeat 0 0; font-size:20px; color:#2B2925; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }*/
-#viewer .dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:180px; z-index:98; padding-top:6px; background:url(../img/dialogShadow.png) repeat-x 0 0; }
+#viewer .dialogWrapper { position:absolute; bottom:-180px; left:0; width:100%; height:100px; z-index:98; padding-top:6px; background:url(../img/dialogShadow.png) repeat-x 0 0; }
 #viewer .dialogWrapper .dialog { position:relative; width:100%; height:100%; background:#E9E4D5 url(../img/d2.jpg) repeat 0 0; font-size:26px; color:#46372A; font-family: "Palatino"; line-height:1.4em; border-top:2px solid #8F8676; }
 #viewer .dialogWrapper .dialog .arrow { position:absolute; width:40px; height:30px; top:-25px; left:0; background:url(../img/dialog_arrow.png) no-repeat center; }
-#viewer .dialogWrapper .dialog .message { margin:30px; text-shadow:rgba(70,55,42,0.3) 0 0.1em 0.1em;}
+#viewer .dialogWrapper .dialog .messageWrapper { width: 100%; height: 100%; margin-top: 0.5em; overflow: hidden; outline: 1px solid red; position: relative; }
+#viewer .dialogWrapper .dialog .messageWrapper .message { margin: 1em; text-shadow:rgba(70,55,42,0.3) 0 0.1em 0.1em; position: relative; top:0; outline: 1px solid green; }
+#viewer .dialogWrapper .dialog .messageWrapper .message .line { outline: 1px solid blue; /*position: relative; top: 0;*/ float: left; white-space: nowrap;}
 /*.layer.dialog .dialogShadow { width:100%; height:6px; background:blue url(f../img/dialogShadow.png) repeat-x 0 0; position:absolute; top:0px; left:0; }*/
 #viewer .info { background:rgba(0,0,0,0.6); color:yellow; padding:10px; position:absolute; right:0; top:0; z-index:99; }
 #viewer .info div { padding:0.2em 0; }

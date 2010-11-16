@@ -103,7 +103,6 @@ D.defaults = {
   },
   container:        '#disgaea',
   debug:            true,
-  dialogWrapperHeight:   180,
   direction:        undefined,
   form:             '#edit',
   imagePath:        '../img/',
@@ -257,7 +256,7 @@ D.Viewer.renderDialog = function(layer){
       }
       
       $(this.element).append(dialog.wrapper)
-      
+
       dialog.popIn()
       this.dialog = dialog
     }
@@ -597,18 +596,26 @@ D.PaletteThumb.init = function(){
     }).css('visibility', 'hidden'))
 }
 
-D.Dialog = {}
-D.Dialog.count = 0
-D.Dialog.wrapper = $div(false, 'dialogWrapper')
-D.Dialog.element = $div(false, 'dialog')
-D.Dialog.message = $div(false, 'message')
-D.Dialog.arrow = $div(false, 'arrow')
-D.Dialog.visible = false
+D.Dialog = {
+  count: 0,
+  wrapper: $div(false, 'dialogWrapper'),
+  element: $div(false, 'dialog'),
+  messageWrapper: $div(false, 'messageWrapper'),
+  message: $div(false, 'message'),
+  arrow: $div(false, 'arrow'),
+  visible: false,
+  wrapSpeed: 400,
+  startingPos: 15
+}
+
+// D.Dialog.line = $div(false, 'line').data('active', true)
+// D.Dialog.targetLine = D.Dialog.line
 D.Dialog.init = function(){
-  $(this.wrapper)
-    .append($(this.element)
-      .append(this.message)
-        .append(this.arrow))
+  this.wrapper
+    .append(this.element
+      .append(this.messageWrapper.append(this.message.append(this.line)))
+      .append(this.arrow)
+    )
   // console.log('--init dialog box')
 }
 D.Dialog.buildIn = function(){
@@ -616,7 +623,10 @@ D.Dialog.buildIn = function(){
       params = {},
       offset = $(D.getViewer().element).find('img[src$="'+this.layer.data.src+'"]').width() / 2
   params[dialog.layer.side] = offset
-  $(this.message).css('color', this.layer.color || D.util.get('textColor'))
+  this.targetLine = $div(false, 'line').data('active', true)
+  $(this.message)
+    .css('color', this.layer.color || D.util.get('textColor'))
+    .append(this.targetLine)
   // console.log('build in', params)
   $(this.arrow)
     .css({left: 'auto', right: 'auto', top: -15})
@@ -627,9 +637,16 @@ D.Dialog.buildIn = function(){
     }, 100, function(){
       // console.log('arrow in')
     })
-  this.timer = setInterval(function(){
-    D.getViewer().dialog.appendLetter()
-  }, 30)
+    this.timer = new Timer()
+    this.timer
+      .interval(30)
+      .addCallback(function(){
+          D.getViewer().dialog.appendLetter()
+        })
+      .start()
+  // this.timer = setInterval(function(){
+  //   D.getViewer().dialog.appendLetter()
+  // }, 30)
 }
 D.Dialog.finished = function(){
   // wait for slide timeout then advance
@@ -639,36 +656,69 @@ D.Dialog.appendLetter = function(){
   var dialog = this
   // console.log('append letter.....')
   if (this.count < this.layer.dialog.text.length){
-    $(this.message).text($(this.message).text() + this.layer.dialog.text[this.count])
+    console.log($(this.targetLine).width(), '/', $(this.message).width())
+    if ($(this.targetLine).width() >= $(this.message).width()){
+      this.lineWrap()
+    }
+    $(this.targetLine).text($(this.targetLine).text() + this.layer.dialog.text[this.count])
     this.count++
   } else {
-    clearInterval(this.timer)
+    this.timer.stop().clearCallbacks()
+    // clearInterval(this.timer)
     dialog.finished()
   }
 }
+D.Dialog.lineWrap = function(){
+  var dialog = this
+  this.timer.stop()
+  // animate last line up
+  this.targetLine.animate({
+    opacity: 0.5
+  }, this.wrapSpeed)
+  this.message.animate({
+    top: '-='+this.targetLine.css('line-height').slice(0, -2) // drop the 'px'
+  }, this.wrapSpeed, function(){
+    // add line
+    dialog.targetLine = $div(false, 'line')
+    $(dialog.message).append(dialog.targetLine)
+    // copy last word to next line
+    dialog.timer.start()
+  })
+  console.log('dialog wrap')
+  // $(this.targetLine).animate({
+  //   top: -$(this.targetLine).css('line-height').slice(0, -2) // drop the 'px'
+  // }, 1000)
+}
 D.Dialog.clear = function(){
-  // console.log('--dialog: clear')
+  console.log('--dialog: clear')
   $(this.arrow).animate({
     'top': -15,
     'opacity':0
     }, 100, function(){
       // console.log('arrow out')
     })
-  clearInterval(this.timer)
-  clearTimeout(this.timer)
+  if (this.timer) this.timer.stop().clearCallbacks()
+  // clearInterval(this.timer)
+  // clearTimeout(this.timer)
   this.count = 0
-  $(this.message).text('')
+  $(this.message)
+    // .stop()
+    // .clearQueue()
+    .css('top', 0)
+    .text('')
 }
 D.Dialog.destroy = function(){
   D.getViewer().destroyDialog()
 }
 D.Dialog.popIn = function(){
-  this.wrapperHeight = D.util.get('dialogWrapperHeight')
+  // this.wrapperHeight = D.util.get('dialogWrapperHeight')
+  this.wrapperHeight = $(D.util.get('viewer')).height() / 4
   $(this.wrapper)
     .height(this.wrapperHeight)
     .css('bottom', -this.wrapperHeight)
     .animate({
-      bottom: -(this.wrapperHeight / 3.6)
+      bottom: 0
+      // bottom: -(this.wrapperHeight / 3.6)
     }, 1400, 'easeOutElastic', function(){
       // console.log('done')
     })

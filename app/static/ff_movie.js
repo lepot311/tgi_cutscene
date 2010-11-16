@@ -63,8 +63,10 @@ FF.slideshow = [
         data: FF.assets[2],
         side: 'right',
         animated: true,
-        speed: 1000
-        // dialog: "Hello and welcome to Faxion News at "+localTime()+"."
+        speed: 1000,
+        dialog: {
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut erat tellus, ac pulvinar elit. Morbi ultrices metus vel magna convallis id tempor enim cursus. Aliquam gravida porttitor gravida. Mauris ac nisl lacinia ligula congue laoreet. Vestibulum a sapien tortor. Phasellus pellentesque vulputate semper. Aenean vehicula lorem a tortor volutpat commodo. Duis consequat egestas egestas. Mauris tortor eros, imperdiet quis lacinia eu, pellentesque in lectus. Vestibulum laoreet convallis dui, quis mollis justo auctor sed. Vestibulum commodo tristique erat, at cursus tellus gravida et. Proin malesuada consequat tincidunt. Morbi eu augue urna, eu malesuada elit. Etiam in felis leo, quis malesuada lacus. Suspendisse potenti."
+        }
       }
     ]
   },
