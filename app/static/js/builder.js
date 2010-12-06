@@ -676,7 +676,9 @@ D.Dialog.lineWrap = function(){
   var lineArray = this.targetLine.text().split(" ")
   // remove last word from line
   var lastWord = lineArray.pop()
-  this.targetLine.text(lineArray.join(" "))
+  this.targetLine
+    .text(lineArray.join(" "))
+    .append('<br />')
   // add line
   this.nextLine = $div(false, 'line')
   // copy last word to next line
